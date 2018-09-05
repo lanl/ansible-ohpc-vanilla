@@ -8,6 +8,7 @@ Requirements for running the staging code on your OSX laptop:
    - https://www.virtualbox.org/wiki/Downloads
 
 2) Vagrant
+    - vagrant plugin install vagrant-vbguest vagrant-share
 
 3) homebrew/fink
   - ansible
@@ -46,8 +47,8 @@ Once the machines are booted you can run Ansible on them.
 ansible-playbook -u root ohpc_masters.yaml
 ```
 
-This will log into the ww-master virutal nodes and try and make them a ohpc master for xcat and wareful.
-If you want to limit the run to one host you can use "-l fc-master" for example. If you want to limit the
+This will log into the ww-master virutal node and try and make it an ohpc master for xcat or warewulf.
+If you want to limit the run to one host you can use "-l ww-master" for example. If you want to limit the
 number of plays running you can use the "-t warewulf" tag to limit it to warewulf and its dependencies.
 
 ```
