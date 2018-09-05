@@ -11,7 +11,6 @@
   when: ansible_distribution == "SLES"
 
 - name: cron, install cron
-  #environment: '{{ proxy_env }}'
   package:
     name: cronie
     state: present
@@ -21,7 +20,6 @@
     name: '{{ cron_service_name }}'
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == 'docker'
 
 - name: cron, simple cron example
   cron:

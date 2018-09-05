@@ -1,7 +1,6 @@
 ---
 
 - name: powerman, ensure powerman is installed
-  #environment: "{{ proxy_env }}"
   package:
     name: powerman
     state: present
@@ -33,4 +32,3 @@
     enabled: yes
   when: powerman_node is defined
         and powerman_device is defined
-        and not ansible_virtualization_type == "docker"

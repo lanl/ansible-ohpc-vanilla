@@ -1,6 +1,5 @@
 ---
 - name: Ensure that the logrotate package is installed
-  #environment: "{{ proxy_env }}"
   tags: logrotate
   package:
     name: logrotate

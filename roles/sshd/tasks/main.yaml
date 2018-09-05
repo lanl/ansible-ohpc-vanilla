@@ -1,7 +1,6 @@
 ---
 
 - name: sshd, Install OpenSSH
-  #environment: "{{ proxy_env }}"
   package:
     name: "{{ item }}"
     state: present
@@ -75,4 +74,3 @@
     name: sshd
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == "docker"

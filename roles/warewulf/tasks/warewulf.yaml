@@ -13,7 +13,6 @@
   when: ansible_os_family == "RedHat"
 
 - name: warewulf, Install Warewulf
-  #environment: "{{ proxy_env }}"
   package:
     name: '{{ item }}'
     state: present

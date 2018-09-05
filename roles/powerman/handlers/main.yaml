@@ -4,4 +4,3 @@
   systemd:
     name: powerman
     state: restarted
-  when: not ansible_virtualization_type == "docker"

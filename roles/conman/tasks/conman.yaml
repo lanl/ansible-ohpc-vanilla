@@ -1,7 +1,6 @@
 ---
 
 - name: conman, ensure conman is installed
-  #environment: "{{ proxy_env }}"
   package:
     name: conman-ohpc
     state: present
@@ -22,4 +21,3 @@
     name: conman
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == "docker"

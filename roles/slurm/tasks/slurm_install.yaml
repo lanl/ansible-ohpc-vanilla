@@ -1,7 +1,6 @@
 ---
 
 - name: slurm_install, Install slurm
-  #environment: "{{ proxy_env }}"
   package:
     name: '{{ item }}'
     state: present

@@ -20,7 +20,6 @@
       
 # Install mariadb and dependencies if necessary
 - name: slurm_mysql, Install mariadb if not present
-  #environment: '{{ proxy_env }}'
   package:
     name: '{{ item }}'
     state: present
@@ -44,7 +43,6 @@
     name: '{{ slurm_mysql_service }}'
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == 'docker'
 
 #
 # Remove default accounts and databases
@@ -57,14 +55,12 @@
     host: localhost
     check_implicit_admin: yes
     state: absent
-  when: not ansible_virtualization_type == 'docker'
 
 #Ensure any default DBs are removed
 - name: slurm_mysql, Remove MySQL test database.
   mysql_db:
     name: test
     state: absent
-  when: not ansible_virtualization_type == 'docker'
 
 # Setup the databases if necessary
 - name: slurm_mysql, Create a database slurm_acct_db and slurm_jobcomp if not present.

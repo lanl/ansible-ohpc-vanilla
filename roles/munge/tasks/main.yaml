@@ -1,7 +1,6 @@
 ---
 
 - name: munge, Ensure munge is installed
-  #environment: "{{ proxy_env }}"
   package:
     name: munge-ohpc
     state: present
@@ -26,4 +25,3 @@
     name: munge
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == "docker"

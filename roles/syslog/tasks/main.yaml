@@ -1,7 +1,6 @@
 ---
 
 - name: syslog, Ensure syslog is installed
-  #environment: "{{ proxy_env }}"
   package:
     name: rsyslog
     state: present
@@ -33,4 +32,3 @@
     name: rsyslog
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == "docker"

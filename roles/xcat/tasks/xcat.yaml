@@ -1,7 +1,6 @@
 ---
 
 - name: Install xCAT
-  #environment: "{{ proxy_env }}"
   package:
     name: '{{ item }}'
     state: present

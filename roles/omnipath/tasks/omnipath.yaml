@@ -1,7 +1,6 @@
 ---
 
 - name: omnipath, Install Omnipath Support
-  #environment: "{{ proxy_env }}"
   package:
     name: "{{ item }}"
     state: present
@@ -42,7 +41,6 @@
     - rdma
 
 - name: omnipath, Install Omnipath Fabric Manager
-  #environment: "{{ proxy_env }}"
   package:
     name: '{{ item }}'
     state: present

@@ -5,7 +5,6 @@
     name: 'America/Denver'
 
 - name: ntpd, Ensure ntpd is installed
-  #environment: "{{ proxy_env }}"
   package:
     name: ntp
     state: present
@@ -34,4 +33,3 @@
     name: ntpd
     state: started
     enabled: yes
-  when: not ansible_virtualization_type == "docker"

@@ -27,14 +27,12 @@
         and ansible_distribution == "SLES"
 
 - name: Install epel-release
-  #environment: "{{ proxy_env }}"
   package:
     name: "{{ epel_release }}"
     state: present
   when: ansible_os_family == "RedHat"
 
 - name: ohpc, Install OpenHPC-Base
-  #environment: "{{ proxy_env }}"
   package:
     name: '{{ item }}'
     state: present
