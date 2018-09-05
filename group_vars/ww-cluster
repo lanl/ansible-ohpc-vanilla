@@ -2,19 +2,8 @@
 #
 # Cluster Settings
 #
-cluster_prefix: 'xc'
-cluster_name: 'xc-peltz'
-compute_bos_path: '{{ xcat_bos_path }}'
-
-#
-# xCAT Variables
-#
-xcat_domain_name: 'local'
-xcat_centos_iso_name: 'CentOS-7-x86_64-DVD-1708.iso'
-xcat_centos_iso_checksum: 'ec7500d4b006702af6af023b1f8f1b890b6c7ee54400bb98cef968b883cd6546'
-#xcat_centos_local_iso_path: '/Users/peltz/Downloads/{{ xcat_centos_iso_name }}'
-xcat_centos_url_iso_path: 'http://mirrordenver.fdcservers.net/centos/7/isos/x86_64/{{ xcat_centos_iso_name }}'
-xcat_centos_remote_iso_path: '/root/{{ xcat_centos_iso_name }}'
+cluster_prefix: 'ww'
+cluster_name: '{{ cluster_prefix }}-cluster'
 
 #
 # Cluster Scheduler
@@ -25,45 +14,46 @@ enable_pbspro: false
 #
 # Compute Node Settings
 #
-cluster_num_computes: 8
+cluster_first_compute: "01"
+cluster_num_computes: "08"
 
 cluster_compute_nodes:
-  xc1:
+  "{{ cluster_prefix }}01":
     ip: '172.16.1.1'
     mac: '00:0A:AA:AA:AA:01'
     ipoib: '192.168.1.1'
     bmc: '10.16.1.1'
-  xc2:
+  "{{ cluster_prefix }}02":
     ip: '172.16.1.2'
     mac: '00:0A:AA:AA:AA:02'
     ipoib: '192.168.1.2'
     bmc: '10.16.1.2'
-  xc3:
+  "{{ cluster_prefix }}03":
     ip: '172.16.1.3'
     mac: '00:0A:AA:AA:AA:03'
     ipoib: '192.168.1.3'
     bmc: '10.16.1.3'
-  xc4:
+  "{{ cluster_prefix }}04":
     ip: '172.16.1.4'
     mac: '00:0A:AA:AA:AA:04'
     ipoib: '192.168.1.4'
     bmc: '10.16.1.4'
-  xc5:
+  "{{ cluster_prefix }}05":
     ip: '172.16.1.5'
     mac: '00:0A:AA:AA:AA:05'
     ipoib: '192.168.1.5'
     bmc: '10.16.1.5'
-  xc6:
+  "{{ cluster_prefix }}06":
     ip: '172.16.1.6'
     mac: '00:0A:AA:AA:AA:06'
     ipoib: '192.168.1.6'
     bmc: '10.16.1.6'
-  xc7:
+  "{{ cluster_prefix }}07":
     ip: '172.16.1.7'
     mac: '00:0A:AA:AA:AA:07'
     ipoib: '192.168.1.7'
     bmc: '10.16.1.7'
-  xc8:
+  "{{ cluster_prefix }}08":
     ip: '172.16.1.8'
     mac: '00:0A:AA:AA:AA:08'
     ipoib: '192.168.1.8'
@@ -78,7 +68,7 @@ cluster_bmc_password: 'unknown'
 #
 # Central syslog server 
 #
-syslog_master_remote_host: "*.info @usrc-log.usrc.gov:514"
+#syslog_master_remote_host: "*.info @usrc-cm.usrc:514"
 syslog_compute_remote_host: "*.* @{{ cluster_sms_ip }}:514"
 
 #
@@ -90,8 +80,8 @@ syslog_compute_remote_host: "*.* @{{ cluster_sms_ip }}:514"
 # OpenHPC Optional Components
 #
 # HSN Components
-enable_ib: true
-enable_ipoib: true
+enable_ib: false
+enable_ipoib: false
 enable_opensm: false
 enable_opa: false
 enable_opafm: false
@@ -102,16 +92,16 @@ enable_kargs: false
 # 3rd Party Components
 enable_clustershell: false
 enable_ipmisol: false
-enable_ganglia: true
+enable_ganglia: false
 enable_genders: false
 enable_mrsh: false
 enable_pdsh: true
-enable_nagios: true
+enable_nagios: false
 enable_powerman: false
 
 # Filesystem Components
-enable_beegfs_client: true
-enable_lustre_client: true
+enable_beegfs_client: false
+enable_lustre_client: false
 
 # Development Tools
 enable_mpi_defaults: true
@@ -135,14 +125,14 @@ slurm_control_addr: "{{ slurmctld_addr }}"
 slurm_dbdaddr: "{{ slurmdbd_hostname }}"
 slurm_dbdhost: "{{ slurmdbd_hostname }}"
 #slurm_jobcomphost: "{{ slurmdbd_hostname }}"
-slurm_accountingstoragehost: "localhost"
+#slurm_accountingstoragehost: "localhost"
 #slurm_salloc_str: "/opt/slurm/bin/srun -n1 -N1 --mem-per-cpu=0 --pty --preserve-env --mpi=none $SHELL"
 slurm_pam_sshd: "account    required     pam_slurm.so"
 
 slurm_computenodes: |
-  NodeName=xc[1-{{ cluster_num_computes }}] Sockets=1 CoresPerSocket=1 ThreadsPerCore=1 Feature=compute
+  NodeName={{ cluster_prefix }}[{{ cluster_first_compute }}-{{ cluster_num_computes }}] Sockets=1 CoresPerSocket=1 ThreadsPerCore=1 Feature=compute
 slurm_partitions: |
-  PartitionName=normal Nodes=xc[1-{{ cluster_num_computes }}] Default=YES DefaultTime=1:00:00 MaxTime=24:00:00 State=UP
+  PartitionName=normal Nodes={{ cluster_prefix }}[{{ cluster_first_compute }}-{{ cluster_num_computes }}] Default=YES DefaultTime=1:00:00 MaxTime=24:00:00 State=UP
 
 slurm_gres_nodes: []
 
@@ -150,10 +140,10 @@ slurm_gres_nodes: []
 # Powerman
 #
 powerman_node:
-  - node "xc[1-8]" "ipmi0" "pxc[1-8]"
+  - node "{{ cluster_prefix }}[{{ cluster_first_compute }}-{{ cluster_num_computes }}]" "ipmi0" "p{{ cluster_prefix }}[{{ cluster_first_compute }}-{{ cluster_num_computes }}]"
 
 powerman_device:
-  - device  "ipmi0"  "ipmipower"  "/usr/sbin/ipmipower -u root -D LAN_2_0 -h pxc[1-8] |&"
+  - device  "ipmi0"  "ipmipower"  "/usr/sbin/ipmipower -D lanplus -u root -D LAN_2_0 -h p{{ cluster_prefix }}[{{ cluster_first_compute }}-{{ cluster_num_computes }}] |&"
 
 #
 # Cluster Compute Kernel Arguments

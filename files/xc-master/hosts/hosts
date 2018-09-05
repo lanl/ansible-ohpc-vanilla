@@ -4,40 +4,4 @@
 172.16.0.254 xc-master
 10.16.1.254 xc-master-ipmi
 192.168.0.254 xc-master-ib0
-10.16.1.1 pxc1
-
-
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-### ALL ENTRIES BELOW THIS LINE WILL BE OVERWRITTEN BY WAREWULF ###
-#
-# See provision.conf for configuration paramaters
-
-
-# Node Entry for node: xc1 (ID=16)
-172.16.1.1              xc1.localdomain xc1 xc1-eth0.localdomain xc1-eth0
-
-# Node Entry for node: xc2 (ID=18)
-172.16.1.2              xc2.localdomain xc2 xc2-eth0.localdomain xc2-eth0
-
-# Node Entry for node: xc3 (ID=17)
-172.16.1.3              xc3.localdomain xc3 xc3-eth0.localdomain xc3-eth0
-
-# Node Entry for node: xc4 (ID=13)
-172.16.1.4              xc4.localdomain xc4 xc4-eth0.localdomain xc4-eth0
-
-# Node Entry for node: xc5 (ID=12)
-172.16.1.5              xc5.localdomain xc5 xc5-eth0.localdomain xc5-eth0
-
-# Node Entry for node: xc6 (ID=15)
-172.16.1.6              xc6.localdomain xc6 xc6-eth0.localdomain xc6-eth0
-
-# Node Entry for node: xc7 (ID=14)
-172.16.1.7              xc7.localdomain xc7 xc7-eth0.localdomain xc7-eth0
-
-# Node Entry for node: xc8 (ID=19)
-172.16.1.8              xc8.localdomain xc8 xc8-eth0.localdomain xc8-eth0
+10.16.1.1 pxc01

@@ -1,7 +1,33 @@
-# NOTICE
-# We are not using the default ansible 'hosts' file (/etc/ansible/hosts)
-# Systems are instead organized by environment, e.g.:
+#######################################################################
 #
-# Staging systems:	/etc/ansible/inventories/staging/hosts
-# Testbed systems:	/etc/ansible/inventories/testbed/hosts
-# Production systems:	/etc/ansible/inventories/production/hosts
+# Ansible inventory file
+#
+#######################################################################
+
+
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+# OpenHPC cluster masters 
+[ohpc_masters]
+# VirtualBox
+ww-master.vagrant ansible_host=172.17.0.2
+xc-master.vagrant
+
+# Warewulf cluster masters 
+[warewulf]
+ww-master.vagrant ansible_host=172.17.0.2
+
+# xCAT cluster masters
+[xcat]
+xc-master.vagrant
+
+# Clusters
+[ww-cluster]
+ww-master.vagrant ansible_host=172.17.0.2
+
+[xcat-cluster]
+xc-master.vagrant
