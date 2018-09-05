@@ -12,7 +12,6 @@ compute_bos_path: '{{ xcat_bos_path }}'
 xcat_domain_name: 'local'
 xcat_centos_iso_name: 'CentOS-7-x86_64-DVD-1708.iso'
 xcat_centos_iso_checksum: 'ec7500d4b006702af6af023b1f8f1b890b6c7ee54400bb98cef968b883cd6546'
-#xcat_centos_local_iso_path: '/Users/peltz/Downloads/{{ xcat_centos_iso_name }}'
 xcat_centos_url_iso_path: 'http://mirrordenver.fdcservers.net/centos/7/isos/x86_64/{{ xcat_centos_iso_name }}'
 xcat_centos_remote_iso_path: '/root/{{ xcat_centos_iso_name }}'
 
