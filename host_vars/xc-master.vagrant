@@ -38,3 +38,7 @@ network_ether_interfaces:
     netmask: '{{ cluster_hsn_netmask }}'
 
 ntp_server: 'pool.ntp.org'
+
+## The users pubkeys for virtualbox access
+sshd_users_id_rsa_key: |
+             ssh-rsa #Insert key(s) here

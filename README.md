@@ -29,7 +29,7 @@ Add your users pubkey {{ sshd_users_id_rsa_key }} to use to log in to the VM to 
 
 ```
 vagrant_playbook.yaml
-ansible/inventories/staging/host_vars/ww-master.vagrant
+host_vars/ww-master.vagrant
 ```
 
 This will use the Vagrant file to boot ALL of the nodes defined within it, or you can give it a subset by adding the name.
@@ -43,7 +43,7 @@ ww-master is the Warewulf master.
 Once the machines are booted you can run Ansible on them.
 
 ```
-ansible-playbook -i inventories/staging/hosts -u root ohpc_masters.yaml
+ansible-playbook -u root ohpc_masters.yaml
 ```
 
 This will log into the ww-master virutal nodes and try and make them a ohpc master for xcat and wareful.
@@ -51,7 +51,7 @@ If you want to limit the run to one host you can use "-l fc-master" for example.
 number of plays running you can use the "-t warewulf" tag to limit it to warewulf and its dependencies.
 
 ```
-ansible-playbook -i inventories/staging/hosts -u root -t warewulf ohpc_masters.yaml
+ansible-playbook -u root -t warewulf ohpc_masters.yaml
 ```
 
 ## Start over from scratch and destroy the VMs

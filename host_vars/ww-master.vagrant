@@ -43,5 +43,4 @@ ntp_server: 'pool.ntp.org'
 
 ## The users pubkeys for virtualbox access
 sshd_users_id_rsa_key: |
-             ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDe3hsHYCNFTORkP4Qride91EQl8Ul/mAZS/384E+Thv0XkciKfLwGWBfTA/Iv2AwMNUwR1h+KGzdb/kZmjU+Ryam0omRzF2OwUK46PBO4+jaw3VTpuJFV2mdw06F6tLeKZtTRYqLNkd/RsQrBOTOxxR2VDglfERf7w/8h4EmN3l7y63Ye033leJdMsK2ObiC70p7xLDCGT74/asq41VGE0j5WGxR2udlcd6cbAn/C83LTNZ5xuQoKHv4mWh98Dv1OAfc7uCyf2f0gvrUX2/mRL0A4OdyuDKD3vFwDdpBh8yrV6ejUH4xI8QZubZqUt9CyIkOenkTZbE1YaEoVH/Jct peltz@dune.lanl.gov
-             ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDkMHYtvkjDMB0X//k8/Ngabz6NToJY9m90VqwgJEFEbkt1PHd3WcYinXaOB5B9iriAJXKjNb5ttNBYZg/Lzlkyw8YElw3donKN7PKOwith9qpYiVpx86ftz6eNw2w1931ihR8PZdFACLmBdbOhIzpzzx7XQxd/Xyqr4PwO12ewpRCKbWZ4fwYlwb5pc0ob/jlU3RBopfa4PB/AnMAkMrJGuyscBQjijkyq8fbg1AITx/gViKSmq4yAH4q/YhhghYKFDzW+8i+u2zgI4z05Rs4mR4IzEdcBW0N/UYBG8R/kdARA+/16EI8a1WZV/ORXF6QjtWwrV7iTqhbmBRSUcOzx peltz@muaddib.lanl.gov
+             ssh-rsa #Insert key(s) here
