@@ -27,7 +27,6 @@
     - { role: infiniband, tags: infiniband }
     - { role: omnipath, tags: omnipath }
     - { role: opensm, tags: opensm }
-#    - { role: sshd, tags: sshd }
     - { role: ntpd, tags: ntpd }
     - { role: resolver, tags: resolver }
     - { role: nagios, tags: nagios }
