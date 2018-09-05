@@ -1,0 +1,5 @@
+---
+
+selinux_location: "/etc/selinux/config"
+selinux_policy: "disabled"
+selinux_type: "targeted"

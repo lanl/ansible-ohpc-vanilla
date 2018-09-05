@@ -1,0 +1,27 @@
+---
+
+- name: pdsh, install pdsh
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - pdsh-ohpc
+    - pdsh-mod-slurm-ohpc
+
+- name: pdsh, make groups directory
+  file:
+    path: /etc/dsh/group
+    state: directory
+    owner: 'root'
+    group: 'root'
+    mode: 0755
+
+- name: pdsh, configure dsh groups
+  template:
+    src: '{{ item }}'
+    dest: /etc/dsh/group/
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+  with_items:
+    - compute.j2

@@ -1,0 +1,5 @@
+---
+
+- name: install and configure ganglia if enabled
+  import_tasks: ganglia.yaml
+  when: enable_ganglia is defined and enable_ganglia

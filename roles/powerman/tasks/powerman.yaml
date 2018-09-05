@@ -1,0 +1,36 @@
+---
+
+- name: powerman, ensure powerman is installed
+  #environment: "{{ proxy_env }}"
+  package:
+    name: powerman
+    state: present
+
+- name: powerman, create powerman.conf file
+  template:
+    src: powerman.conf.j2
+    dest: /etc/powerman/powerman.conf
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes
+  notify: restart powerman
+  when: powerman_node is defined
+        and powerman_device is defined
+
+- name: Ensure /var/run/powerman exists
+  file:
+    path: /var/run/powerman
+    owner: daemon
+    group: daemon
+    mode: 0750
+    state: directory
+
+- name: powerman, Ensure service is running
+  systemd:
+    name: powerman
+    state: started
+    enabled: yes
+  when: powerman_node is defined
+        and powerman_device is defined
+        and not ansible_virtualization_type == "docker"

@@ -1,0 +1,11 @@
+{{ ansible_managed | comment }}
+tmpfs /dev/shm tmpfs defaults 0 0
+devpts /dev/pts devpts gid=5,mode=620 0 0
+sysfs /sys sysfs defaults 0 0
+proc /proc proc defaults 0 0
+{% for line in warewulf_bos_fstab %}
+{{ line }}
+{% endfor %}
+{% if enable_lustre_client and lustre_mgs_fs_name is defined %}
+{{ lustre_mgs_fs_name }} /mnt/lustre lustre defaults,_netdev,localflock,retry=2 0 0
+{% endif %}

@@ -1,0 +1,5 @@
+---
+
+- name: powerman, ensure powerman is installed
+  import_tasks: powerman.yaml
+  when: enable_powerman is defined and enable_powerman

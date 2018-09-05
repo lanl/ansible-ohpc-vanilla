@@ -1,0 +1,58 @@
+---
+
+- name: xcat_files, Enable repos in chroot
+  command: 'yum-config-manager --installroot={{ compute_bos_path }} --enable base'
+  notify: rebuild image
+
+- name: xcat_files, copy repo file into chroot
+  copy:
+    src: '{{ item }}'
+    remote_src: true
+    dest: '{{ compute_bos_path }}/etc/yum.repos.d/'
+  with_items:
+    - /etc/yum.repos.d/OpenHPC.repo
+    - /etc/yum.repos.d/epel.repo
+  notify: rebuild image
+
+- name: xcat_files, fstab in BOS Image
+  template:
+    src: fstab.j2
+    dest: '{{ compute_bos_path }}/etc/fstab'
+    owner: 'root'
+    group: 'root'
+    mode: 0444
+    backup: yes
+  when: xcat_bos_fstab is defined
+  notify: rebuild image
+
+- name: xcat_files, Create netboot directory
+  file:
+    path: '/install/custom/netboot'
+    state: directory
+    owner: 'root'
+    group: 'root'
+    mode: 0755
+
+- name: xcat_files, copy ssh key into image
+  copy:
+    src: /root/.ssh/id_rsa.pub
+    remote_src: true
+    dest: /root/.ssh/authorized_keys
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  notify: rebuild image
+
+- name: xcat_files, chdef compute image with synclist
+  command: 'chdef -t osimage -o centos7.4-x86_64-netboot-compute synclists="/install/custom/netboot/compute.synclist"'
+  register: result
+  failed_when: result.rc != 0
+
+- name: xcat_files, create compute.synclist
+  template:
+    src: compute.synclist.j2
+    dest: '/install/custom/netboot/compute.synclist'
+    owner: 'root'
+    group: 'root'
+    mode: 0444
+    backup: yes

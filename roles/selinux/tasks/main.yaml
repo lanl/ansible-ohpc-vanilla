@@ -1,0 +1,7 @@
+---
+
+- name: selinux, Disable SELinux
+  selinux:
+    state: permissive
+    policy: targeted
+  when: ansible_distribution != "SLES"

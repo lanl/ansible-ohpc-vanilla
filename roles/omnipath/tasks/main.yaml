@@ -1,0 +1,5 @@
+---
+
+- name: omnipath, Install Omnipath Support
+  import_tasks: omnipath.yaml
+  when: enable_opa is defined and enable_opa

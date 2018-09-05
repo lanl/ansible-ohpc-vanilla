@@ -1,0 +1,25 @@
+---
+
+- name: pbspro, install pbspro
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - pbspro-server-ohpc
+
+- name: pbspro, start and enable pbs
+  systemd:
+    name: pbs
+    state: started
+    enabled: yes
+
+- name: pbspro, setup pbs environment
+  command: '{{ item }}'
+  with_items:
+    - '/opt/pbs/bin/qmgr -c "set server default_qsub_arguments= -V"'
+    - '/opt/pbs/bin/qmgr -c "set server resources_default.place=scatter"'
+    - '/opt/pbs/bin/qmgr -c "set server job_history_enable=True"'
+
+- name: pbspro, insert compute nodes
+  command: '/opt/pbs/bin/qmgr -c "create node {{ item.key }}"'
+  with_dict: '{{ cluster_compute_nodes }}'

@@ -1,0 +1,4 @@
+---
+- name: opensm, include role if enabled
+  import_tasks: opensm.yaml
+  when: enable_opensm is defined and enable_opensm

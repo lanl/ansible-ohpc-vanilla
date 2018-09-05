@@ -1,0 +1,46 @@
+---
+
+- name: ohpc, set arch for CentOS/RedHat x86_64
+  set_fact:
+    epel_release: '{{ epel_release_x86_64 }}'
+    ohpc_release: '{{ ohpc_release_centos_x86_64 }}'
+  when: ansible_architecture == 'x86_64'
+        and ansible_os_family == 'RedHat'
+
+- name: ohpc, set arch for CentOS/RedHat aarch64
+  set_fact:
+    epel_release: '{{ epel_release_aarch64 }}'
+    ohpc_release: '{{ ohpc_release_centos_aarch64 }}'
+  when: ansible_architecture == 'aarch64'
+        and ansible_os_family == 'RedHat'
+
+- name: ohpc, set arch for SLES12 x86_64
+  set_fact:
+    ohpc_release: '{{ ohpc_release_sles_x86_64 }}'
+  when: ansible_architecture == 'x86_64'
+        and ansible_distribution == "SLES"
+
+- name: ohpc, set arch for SLES12 aarch64
+  set_fact:
+    ohpc_release: '{{ ohpc_release_sles_aarch64 }}'
+  when: ansible_architecture == 'aarch64'
+        and ansible_distribution == "SLES"
+
+- name: Install epel-release
+  #environment: "{{ proxy_env }}"
+  package:
+    name: "{{ epel_release }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: ohpc, Install OpenHPC-Base
+  #environment: "{{ proxy_env }}"
+  package:
+    name: '{{ item }}'
+    state: present
+    enablerepo: '*optional-rpms'
+    disable_gpg_check: yes
+  with_items:
+    - '{{ ohpc_release }}'
+    - 'ohpc-base'
+    - 'docs-ohpc'

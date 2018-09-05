@@ -1,0 +1,19 @@
+---
+
+- name: warewulf, Check and see if warewulf db exist
+  stat:
+    path: /var/lib/mysql/warewulf
+  register: warewulf_db
+
+- name: warewulf, Initialize the Warewulf DB
+  command: wwinit database
+  when: not warewulf_db.stat.exists
+
+- name: warewulf, Check and see if cluster keys exist
+  stat:
+    path: /root/.ssh/cluster.pub
+  register: cluster_key
+
+- name: warewulf, Initialize the SSH Keys
+  command: wwinit ssh_keys
+  when: not cluster_key.stat.exists

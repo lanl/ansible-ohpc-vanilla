@@ -1,0 +1,5 @@
+---
+
+- name: rebuild image
+  command: 'packimage centos7.4-x86_64-netboot-compute'
+  when: '"xcat" in group_names'

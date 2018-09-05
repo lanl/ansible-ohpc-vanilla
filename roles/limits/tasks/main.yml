@@ -1,0 +1,4 @@
+---
+
+- import_tasks: limits.yml
+  when: 'not ansible_virtualization_type == "docker"'

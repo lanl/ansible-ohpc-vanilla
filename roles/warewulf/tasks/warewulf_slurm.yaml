@@ -1,0 +1,48 @@
+---
+
+- name: warewulf_slurm, Copy slurm files into compute image
+  copy:
+    src: '{{ item }}'
+    dest: '{{ compute_bos_path }}{{ item }}'
+    remote_src: true
+  with_items:
+    - '/etc/slurm/slurm.conf'
+    - '/etc/slurm/cgroup.conf'
+    - '/etc/slurm/gres.conf'
+    - '/etc/slurm/slurm.prolog'
+    - '/etc/slurm/slurm.epilog.clean'
+  notify: rebuild vnfs
+
+- name: warewulf_slurm, check to see if slurmd is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled slurmd
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: warewulf_slurm, enable slurmd in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable slurmd
+  when: '"disabled" in result.stdout'
+  notify: rebuild vnfs
+
+- name: warewulf_slurm, Copy munge files into compute image
+  copy:
+    src: '{{ item }}'
+    dest: '{{ compute_bos_path }}{{ item }}'
+    owner: munge
+    group: munge
+    mode: 0400
+    remote_src: true
+  with_items:
+    - '/etc/munge/munge.key'
+  notify: rebuild vnfs
+
+# Pam support for slurm in sshd
+
+- name: warewulf_slurm, add pam_slurm to /etc/pam.d/sshd
+  template:
+    src: pam_sshd.j2
+    dest: '{{ compute_bos_path }}/etc/pam.d/sshd'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes

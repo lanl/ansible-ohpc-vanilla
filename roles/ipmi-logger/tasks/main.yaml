@@ -1,0 +1,21 @@
+---
+
+- name: ipmi-logger, Create directories
+  file:
+    path: /etc/{{ item }}
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - ipmi-logger
+    - ipmi-logger/actions.d
+
+- name: ipmi-logger, Create logger.conf
+  template:
+    src: logger.conf.j2
+    dest: /etc/ipmi-logger/logger.conf
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes

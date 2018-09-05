@@ -1,0 +1,9 @@
+---
+
+- name: users, create a test user
+  user:
+    name: test
+    comment: "Test User"
+    shell: /bin/bash
+    generate_ssh_key: yes
+    state: present

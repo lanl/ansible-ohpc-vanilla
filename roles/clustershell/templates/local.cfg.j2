@@ -1,0 +1,14 @@
+{{ ansible_managed | comment }}
+# ClusterShell groups config local.cfg
+#
+# Replace /etc/clustershell/groups
+#
+# Note: file auto-loaded unless /etc/clustershell/groups is present
+#
+# See also groups.d/cluster.yaml.example for an example of multiple
+# sources single flat file setup using YAML syntax.
+#
+# Feel free to edit to fit your needs.
+adm: {{ cluster_sms_hostname }}
+compute: {{ cluster_prefix }}[1-{{ cluster_num_computes }}]
+all: @adm,@compute

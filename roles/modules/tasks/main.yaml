@@ -1,0 +1,14 @@
+---
+
+- name: modules, define the module paths to use
+  template:
+    src: '{{ item }}.j2'
+    dest: '/etc/profile.d/{{ item }}'
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes
+  with_items:
+    - lmod.sh
+    - lmod.csh
+

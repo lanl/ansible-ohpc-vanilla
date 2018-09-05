@@ -1,0 +1,21 @@
+---
+
+- name: Start the slurmdbd service on the drm node
+  service:
+    name: slurmdbd
+    state: started
+    enabled: yes
+
+#
+# Create the cluster tables if necessary
+#
+
+- name: Check to see if cluster exists already
+  command: /usr/bin/sacctmgr list cluster
+  register: sacctmgr_cluster
+  ignore_errors: yes
+  changed_when: false
+
+- name: Register cluster if it doesn't exist
+  command: /usr/bin/sacctmgr -i add cluster {{ slurm_clustername }}
+  when: slurm_clustername not in sacctmgr_cluster.stdout

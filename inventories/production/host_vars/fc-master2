@@ -1,0 +1,108 @@
+---
+hosts_additional_hosts:
+  - address: 192.168.200.100
+    hostnames:
+      - fc-master2-em3
+  - address: 192.168.100.1
+    hostnames:
+      - pfc01
+  - address: 192.168.100.2
+    hostnames:
+      - pfc02
+  - address: 192.168.100.3
+    hostnames:
+      - pfc03
+  - address: 192.168.100.4
+    hostnames:
+      - pfc04
+  - address: 192.168.100.5
+    hostnames:
+      - pfc05
+
+cluster_sms_eth_internal: em3
+warewulf_compute_eth_provision: eth0
+
+network_ether_interfaces:
+  - device: em1
+    name: eth1
+    bootproto: dhcp
+    onboot: yes
+  - device: em2
+    name: eth2
+    bootproto: static
+    onboot: yes
+    address: 192.168.100.100
+    netmask: 255.255.255.0
+  - device: em3
+    name: eth3
+    bootproto: static
+    onboot: yes
+    address: 192.168.200.100
+    netmask: 255.255.255.0
+  - device: ib0
+    name: ib0
+    bootproto: static
+    onboot: yes
+    address: 192.168.0.100
+    netmask: 255.255.255.0
+
+crond_files:
+  hello_world:
+    contents: |
+      #!/bin/sh
+      echo "hello world" > /tmp/crond
+
+cron_hourly_files:
+  hello_world:
+    contents: |
+      #!/bin/sh
+      echo "hello world" > /tmp/cronhourly
+      
+cron_daily_files:
+  hello_world:
+    contents: |
+      #!/bin/sh
+      echo "hello world" > /tmp/crondaily
+
+conman_compute:
+  - CONSOLE name="fc01" dev="ipmi:pfc01" ipmiopts=""
+  - CONSOLE name="fc02" dev="ipmi:pfc02" ipmiopts=""
+  - CONSOLE name="fc03" dev="ipmi:pfc03" ipmiopts=""
+  - CONSOLE name="fc04" dev="ipmi:pfc04" ipmiopts=""
+  - CONSOLE name="fc05" dev="ipmi:pfc05" ipmiopts=""
+
+powerman_node:
+  - node "fc[01-05]" "ipmi0" "pfc[01-05]"
+
+powerman_device:
+  - device  "ipmi0"  "ipmipower"  "/usr/sbin/ipmipower -u root -D LAN_2_0 -h pfc[01-05] |&"
+
+slurm_config_path: "/etc/slurm"
+#slurm_state_source: "vl-filer:/systems/slurm"
+slurmctld_hostname: "fc-master2"
+slurmctld_addr: "192.168.200.100"
+#slurmctld_backup: "ga-drm2"
+slurmdbd_hostname: "fc-master2"
+cluster_name: "fc"
+slurm_clustername: "{{ cluster_name }}"
+
+# Variables in the *.conf.j2 files
+slurm_controlmachine: "{{ slurmctld_hostname }}"
+slurm_control_addr: "{{ slurmctld_addr }}"
+#slurm_backupcontroller: "{{ slurmctld_backup }}"
+slurm_computenodes: |
+  NodeName=fc01 Sockets=4 CoresPerSocket=12 ThreadsPerCore=1 Feature=amd,compute
+  NodeName=fc[02-05] Sockets=2 CoresPerSocket=4 ThreadsPerCore=2 Feature=intel,compute
+slurm_partitions: |
+  PartitionName=standard Nodes=fc[01-05] Default=YES DefaultTime=1:00:00 MaxTime=24:00:00 State=UP OverSubscribe=EXCLUSIVE
+slurm_dbdaddr: "{{ slurmdbd_hostname }}"
+slurm_dbdhost: "{{ slurmdbd_hostname }}"
+slurm_storagehost: "localhost"
+slurm_jobcomphost: "{{ slurmdbd_hostname }}"
+slurm_accountingstoragehost: "localhost"
+#slurm_salloc_elogin_str: "/usr/local/bin/salloc"
+slurm_salloc_str: "/opt/slurm/bin/srun -n1 -N1 --mem-per-cpu=0 --pty --preserve-env --mpi=none $SHELL"
+
+gres_nodes: []
+
+warewulf_master_key: "ssh-dss AAAAB3NzaC1kc3MAAACBAJLDq48mgLi0YccVtmoEqA4n3ZBTGo3RNzfYnRFxi8rsonzHsVtMMO4G0Gxisx9SSsAUS2Xmp5aDfroTWM2C9sVox4qr050fQA1t5VQ1TtloqpjesdQhsI05v/YdXt9U7sUcxRzTQ3OGE3dE23y5LCJffZ6SA0M6brPD2D7DKFErAAAAFQDU1+zChfBJvWKTpxjo2P1gs4G5UwAAAIA/3KCVBNY+2cP5PjPuP3Ia8ZKtruX2FOvU551VnAEIfsnfZmN6b2HMsyEy7WdD7St3pWfsPdfVpljkTucn54an6oXZ1+ptyDW7NqlkbDhHSA34yKz0yxOb7SwJYQXRddhUFBL1mPUD/lejWEdWSpeLOiVp8xjqbqfg1JXixJwMcwAAAIBRUDIQgUbMnN2OTk1cQm+8S1csNPGk6VzQSvhxWidDVZ6G9ORtq0W357aD7LYV5W6gJz2hOuamuPfPz60dzin5nNXp8MsuESNIZ/eZVW7U4JT4ozN3eK543FeXbZPOrIYGvsc2JeDaxLPMtvmWt04EkXs3tSVOdERTw1G13NjeuA== Warewulf Cluster key"

@@ -1,0 +1,5 @@
+---
+
+- name: slurm, install and configure slurm
+  import_tasks: slurm.yaml
+  when: enable_slurm is defined and enable_slurm

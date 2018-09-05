@@ -1,0 +1,15 @@
+---
+
+- name: infiniband, Install Infiniband Support
+  import_tasks: infiniband.yaml
+  when: enable_ib is defined and enable_ib
+
+- name: infiniband, Load warewulf tasks
+  import_tasks: infiniband_warewulf.yaml
+  when: '"warewulf" in group_names
+        and (enable_ipoib is defined and enable_ipoib)'
+
+- name: infiniband, Load xCAT tasks
+  import_tasks: infiniband_xcat.yaml
+  when: '"xcat" in group_names
+        and (enable_ipoib is defined and enable_ipoib)'

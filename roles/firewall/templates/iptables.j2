@@ -1,0 +1,490 @@
+{{ ansible_managed | comment }}
+
+######################################################################
+#
+# BEGIN - POSTROUTING PREFACE
+#
+# This section is executed BEFORE all other POSTROUTING traffic rules.
+
+#
+#
+
+# END - POSTROUTING PREFACE
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - POSTROUTING POSTSCRIPT
+#
+# This section is executed AFTER all other POSTROUTING traffic rules.
+
+#
+#
+
+# END - POSTROUTING POSTSCRIPT
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - FORWARDING PREFACE
+#
+# This section is executed BEFORE all other FORWARDING traffic rules.
+
+*filter
+
+:FORWARD DROP [0:0]
+:fw_blacklist - [0:0]
+#:@TemplateList_FORWARD - [0:0]  # Line commented out due to lack of value for @TemplateList_FORWARD
+
+
+
+## Blacklist ##
+#-A FORWARD -i @if_fw_inc_permit -j fw_blacklist  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -o @if_fw_out_permit -j fw_blacklist  # Line commented out due to lack of value for @if_fw_out_permit
+
+# whitelist before blacklist
+#-A fw_blacklist -d @fw_whitelist -j RETURN  # Line commented out due to lack of value for @fw_whitelist
+
+# Drop anything that's blacklisted. Return on everything else.
+#-A fw_blacklist -d @fw_blacklist -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES FW BL: "  # Line commented out due to lack of value for @fw_blacklist
+#-A fw_blacklist -d @fw_blacklist -j DROP  # Line commented out due to lack of value for @fw_blacklist
+
+# Return if no matches
+-A fw_blacklist -j RETURN
+
+
+#
+#
+
+# END - FORWARDINGING PREFACE
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - FORWARDING POSTSCRIPT
+#
+# This section is executed AFTER all other FORWARD traffic rules
+
+### LOGGING ###
+#
+# LOG and DROP remaining udp traffic
+#-A FORWARD -i @if_fw_inc_permit -p udp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES UDP-FWD: "  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -i @if_fw_inc_permit -p udp -j DROP  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -o @if_fw_out_permit -p udp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES UDP-FWD: "  # Line commented out due to lack of value for @if_fw_out_permit
+#-A FORWARD -o @if_fw_out_permit -p udp -j DROP  # Line commented out due to lack of value for @if_fw_out_permit
+
+# LOG and DROP remaining icmp traffic
+#-A FORWARD -i @if_fw_inc_permit -p icmp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES ICMP-FWD: "  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -i @if_fw_inc_permit -p icmp -j DROP  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -o @if_fw_out_permit -p icmp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES ICMP-FWD: "  # Line commented out due to lack of value for @if_fw_out_permit
+#-A FORWARD -o @if_fw_out_permit -p icmp -j DROP  # Line commented out due to lack of value for @if_fw_out_permit
+
+# LOG and DROP remaining tcp traffic
+#-A FORWARD -i @if_fw_inc_permit -p tcp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES TCP-FWD: "  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -i @if_fw_inc_permit -p tcp -j DROP  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -o @if_fw_out_permit -p tcp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES TCP-FWD: "  # Line commented out due to lack of value for @if_fw_out_permit
+#-A FORWARD -o @if_fw_out_permit -p tcp -j DROP  # Line commented out due to lack of value for @if_fw_out_permit
+
+# LOG and DROP remaining unknown traffic
+#-A FORWARD -i @if_fw_inc_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES PROTOCOL-X-FWD: "  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -i @if_fw_inc_permit -j DROP  # Line commented out due to lack of value for @if_fw_inc_permit
+#-A FORWARD -o @if_fw_out_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES PROTOCOL-X-FWD: "  # Line commented out due to lack of value for @if_fw_out_permit
+#-A FORWARD -o @if_fw_out_permit -j DROP  # Line commented out due to lack of value for @if_fw_out_permit
+
+# END - FORWARDING POSTSCRIPT
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING PREFACE
+#
+# This section is executed BEFORE all other INCOMING traffic rules.
+#
+
+### Table of Packet Filtering Rules ###
+:INPUT DROP [0:0]
+
+:dhcp_tftp_inc_permit - [0:0] 
+:cpat_inc_permit - [0:0] 
+:nfs_inc_permit - [0:0] 
+:rsync_inc_permit - [0:0] 
+:http_inc_permit - [0:0] 
+:ntp_inc_permit - [0:0] 
+:smtp_inc_permit - [0:0] 
+:syn-flood - [0:0]
+
+:OUTPUT ACCEPT [0:0]
+
+:nfs_out_permit - [0:0] 
+:ldap_out_permit - [0:0] 
+:ntp_out_permit - [0:0] 
+
+# INCOMING traffic on the loopback device
+-A INPUT -i lo -j ACCEPT
+
+## limit dns to valid sizes
+-A INPUT -p udp --sport 53 -m length --length 511: -j LOG --log-prefix "IPTABLES MalDNS"
+-A INPUT -p udp --sport 53 -m length --length 511: -j DROP
+-A INPUT -p tcp --sport 53 -m length --length 1025: -j LOG --log-prefix "IPTABLES MalDNS"
+-A INPUT -p tcp --sport 53 -m length --length 1025: -j DROP
+
+# ESTABLISHED RELATED TRAFFIC
+#
+# A note about ESTABLISHED connections:
+# When a packet with the SYN+ACK flags set arrives in response to a packet
+# with SYN set, the connection tracking mechanism thinks: "I have just
+# seen a packet with SYN+ACK which answers a SYN I had previously seen, so
+# this is an ESTABLISHED connection." The important point here is that the
+# conntrack states are not equivalent to tcp states: a connection doesn't
+# achive the tcp connection status of ESTABLISHED until the ACK after the
+# SYN+ACK has been received.
+#
+# INCOMING ESTABLISHED,RELATED traffic from the WAN
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+### GLOBAL SYN-FLOOD PROTECTION ###
+#
+# limit, LOG and DROP syn-flood attacks
+-A INPUT -p tcp -m tcp --tcp-flags SYN,RST,ACK SYN -j syn-flood
+
+# DROP spoofed packets claiming to be the loopback interface
+-A INPUT -d 127.0.0.0/8 -j LOG --log-prefix "IPTABLES LOOPBACK-IN: "
+-A INPUT -d 127.0.0.0/8 -j DROP
+#
+# DROP class D multicast as a source address (illegal)
+-A INPUT -s 224.0.0.0/4 -j LOG --log-prefix "IPTABLES MULTICAST-IN: "
+-A INPUT -s 224.0.0.0/4 -j DROP
+#
+# DROP spoofed packets claiming to be from a class E private network
+-A INPUT -s 240.0.0.0/5 -j LOG --log-prefix "IPTABLES PRIVATE-NET-IN: "
+-A INPUT -s 240.0.0.0/5 -j DROP
+#
+## ACCEPT the following INCOMING traffic ###
+
+# END - INCOMING PREFACE
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING NFS
+#
+# INCOMING traffic related to NFS servers. 
+# Allows interactive jobs to function.
+
+-A INPUT -p tcp -m tcp --dport 20000:61000 -j nfs_inc_permit
+-A INPUT -p udp -m udp --dport 20000:61000 -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --dport 2049 -j nfs_inc_permit
+-A INPUT -p udp -m udp --dport 2049 -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --dport 4045:4046 -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --dport 111 -j nfs_inc_permit
+-A INPUT -p udp -m udp --dport 111 -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --sport 20000:61000 --dport 1024: -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --sport 2049 --dport 1024: -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --sport 4045:4046 --dport 1024: -j nfs_inc_permit
+-A INPUT -p tcp -m tcp --sport 111 --dport 1024: -j nfs_inc_permit
+
+
+# nfz.ccstar.lanl.gov
+-A nfs_inc_permit -s 10.15.1.11 -j ACCEPT 
+-A nfs_inc_permit -j RETURN
+
+# END - INCOMING NFS
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING rsync
+#
+# INCOMING traffic related to rsync.
+
+-A INPUT -p tcp -m tcp --dport 873 -j rsync_inc_permit
+
+### SUPPORT SERVICES (CM servers only) ###
+
+# newmexicosonsortium.org
+-A rsync_inc_permit -s 10.0.15.0/24 -j ACCEPT 
+
+-A rsync_inc_permit -s 10.15.0.0/16 -j ACCEPT 
+
+# Log and drop rsync attempts from other hosts
+-A rsync_inc_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES RSYNC-IN: "
+-A rsync_inc_permit -j DROP
+
+# END - INCOMING rsync
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING HTTP
+#
+# INCOMING traffic related to HTTP
+
+-A INPUT -p tcp -m tcp -m multiport --dports 80 -j http_inc_permit
+
+### SUPPORT SERVICES (CM servers only) ###
+
+# cc-gate.ccstar.lanl.gov
+-A http_inc_permit -s 10.15.0.0/16 -j ACCEPT 
+
+### CLUSTERS (CM servers only) ###
+
+# LOG and DROP attempts from other hosts
+-A http_inc_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES HTTP-IN: "
+-A http_inc_permit -j DROP
+
+# END - INCOMING HTTP/HTTPS
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING NTP  
+#
+# INCOMING traffic related to Network Time Protocol (NTP).
+
+-A INPUT -p udp -m udp --dport 123 -j ntp_inc_permit
+-A INPUT -p tcp -m tcp --dport 123 -j ntp_inc_permit
+
+
+# 
+-A ntp_inc_permit -s 10.0.0.0/8 -j ACCEPT 
+# ns1.lanl.gov
+-A ntp_inc_permit -s 128.165.4.4 -j ACCEPT 
+# ns2.lanl.gov
+-A ntp_inc_permit -s 128.165.4.33 -j ACCEPT 
+-A ntp_inc_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES NTP-IN:" 
+-A ntp_inc_permit -j DROP
+
+# END - INCOMING NTP 
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING SMTP 
+#
+# INCOMING traffic related to Simple Mail Transfer Protocol (SMTP)
+# services, AKA email.
+
+-A INPUT -p tcp -m tcp --dport 25 -j smtp_inc_permit
+
+# 
+-A smtp_inc_permit -s 10.15.0.0/16 -j ACCEPT 
+
+# LOG and DROP attempts from other hosts
+-A smtp_inc_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES SMTP-IN: "
+-A smtp_inc_permit -j DROP
+
+# END - INCOMING SMTP 
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - INCOMING POSTSCRIPT
+#
+# This section is executed AFTER all other INCOMING traffic rules.
+
+#
+# log & DROP fragments
+-A INPUT -f -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES FRAGMENTS: "
+-A INPUT -f -j DROP
+
+# NTP
+
+# 
+-A INPUT -p udp -m udp --dport 123 -s 10.15.0.0/16 -j ACCEPT 
+# 
+
+# SSH INPUT Rules
+
+# 
+-A INPUT -p tcp -m tcp --dport 22 -s 10.15.0.0/16 -j ACCEPT 
+# 
+-A INPUT -p tcp -m tcp --dport 22 -s 10.0.15.0/24 -j ACCEPT 
+# 
+# traceroute (1 hop max!) & other icmp
+
+# 
+-A INPUT -p udp -m udp --dport 33434:33523 -m state --state NEW -s 10.15.0.0/16 -j ACCEPT 
+# 
+
+# 
+-A INPUT -p icmp -m state --state NEW -s 10.15.0.0/16 -j ACCEPT 
+# 
+-A INPUT -p icmp -m state --state NEW -s 10.0.15.0/24 -j ACCEPT 
+# 
+
+### LOGGING ###
+#
+# LOG and DROP remaining udp traffic
+-A INPUT -p udp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES UDP-IN: "
+-A INPUT -p udp -j DROP
+#
+# LOG and DROP remaining icmp traffic
+-A INPUT -p icmp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES ICMP-IN: "
+-A INPUT -p icmp -j DROP
+#
+# LOG and DROP remaining tcp traffic
+-A INPUT -p tcp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES TCP-IN: "
+-A INPUT -p tcp -j DROP
+#
+# LOG and DROP remaining unknown traffic
+-A INPUT -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES PROTOCOL-X-IN: "
+-A INPUT -j DROP
+
+# END - INCOMING POSTSCRIPT
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - OUTGOING PREFACE
+#
+# This section is executed BEFORE all other OUTGOING traffic rules.
+
+# Accept all outgoing traffic on the loopback device
+-A OUTPUT -o lo -j ACCEPT
+
+# DROP untracked local icmp packets
+-A OUTPUT -p icmp -m state --state INVALID -j LOG --log-prefix "IPTABLES ICMP-OUT: "
+-A OUTPUT -p icmp -m state --state INVALID -j DROP
+# END - OUTGOING PREFACE
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - OUTGOING NFS
+#
+# OUTBOUND traffic related to NFS servers. 
+# Allows interactive jobs to function.
+
+-A OUTPUT -p tcp -m tcp --dport 20000:61000 -j nfs_out_permit
+-A OUTPUT -p udp -m udp --dport 20000:61000 -j nfs_out_permit
+-A OUTPUT -p tcp -m tcp --dport 2049 -j nfs_out_permit
+-A OUTPUT -p udp -m udp --dport 2049 -j nfs_out_permit
+-A OUTPUT -p tcp -m tcp --dport 4045:4046 -j nfs_out_permit
+-A OUTPUT -p udp -m udp --dport 4045:4046 -j nfs_out_permit
+-A OUTPUT -p tcp -m tcp --dport 111 -j nfs_out_permit
+-A OUTPUT -p udp -m udp --dport 111 -j nfs_out_permit
+
+
+# nfz.ccstar.lanl.gov
+-A nfs_out_permit -d 10.15.1.11 -j ACCEPT 
+-A nfs_out_permit -j RETURN
+
+# END - OUTGOING NFS
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - OUTGOING LDAP 
+#
+# OUTGOING traffic related to the Lightweight Directory Access
+# Protocol (LDAP).
+
+-A OUTPUT -p tcp -m tcp -m state --state NEW --syn --dport 389 -j ldap_out_permit
+-A OUTPUT -p tcp -m tcp -m state --state NEW --syn --dport 636 -j ldap_out_permit
+
+# ldap.newmexicosonsortium.org
+-A ldap_out_permit -d 128.165.227.195 -j ACCEPT 
+#
+-A ldap_out_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES LDAP-OUT: "
+-A ldap_out_permit -j DROP
+
+# END - OUTGOING LDAP 
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - OUTGOING NTP
+#
+# OUTGOING traffic related to Network Time Protocol (NTP).
+
+-A OUTPUT -p udp -m udp --dport 123 -j ntp_out_permit
+-A OUTPUT -p tcp -m tcp --dport 123 -j ntp_out_permit
+
+
+# 
+-A ntp_out_permit -d 10.0.0.0/8 -j ACCEPT 
+#
+-A ntp_out_permit -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES NTP-OUT:"
+-A ntp_out_permit -j DROP
+
+# END - OUTGOING NTP
+#
+######################################################################
+
+
+
+######################################################################
+#
+# BEGIN - OUTGOING POSTSCRIPT
+#
+# This section is executed AFTER all other OUTGOING traffic rules.
+
+# ACCEPT all further traffic
+-A OUTPUT -j ACCEPT
+
+### LOGGING ###
+#
+# LOG and DROP remaining udp traffic
+-A OUTPUT -p udp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES UDP-OUT: "
+-A OUTPUT -p udp -j DROP
+#
+# LOG and DROP remaining icmp traffic
+-A OUTPUT -p icmp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES ICMP-OUT: "
+-A OUTPUT -p icmp -j DROP
+#
+# LOG and DROP remaining tcp traffic
+-A OUTPUT -p tcp -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES TCP-OUT: "
+-A OUTPUT -p tcp -j DROP
+#
+# LOG and DROP remaining unknown traffic
+-A OUTPUT -m limit --limit 10/m --limit-burst 5 -j LOG --log-prefix "IPTABLES PROTOCOL-X-OUT: "
+-A OUTPUT -j DROP
+
+# Load all the accumulated rules into the kernel
+COMMIT
+
+# END - OUTGOING POSTSCRIPT
+#
+######################################################################

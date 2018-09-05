@@ -1,0 +1,15 @@
+{{ ansible_managed | comment }}
+
+include "/etc/powerman/ipmipower.dev"
+
+#tcpwrappers yes
+
+# device section
+{% for device in powerman_device %}
+{{ device }}
+{% endfor %}
+
+# nodes section
+{% for node in powerman_node %}
+{{ node }}
+{% endfor %}

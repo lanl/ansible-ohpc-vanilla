@@ -1,0 +1,190 @@
+---
+#
+# Cluster Settings
+#
+cluster_prefix: 'ww'
+cluster_name: '{{ cluster_prefix }}-peltz'
+
+#
+# Cluster Scheduler
+#
+enable_slurm: true
+enable_pbspro: false
+
+#
+# Compute Node Settings
+#
+cluster_num_computes: 8
+
+cluster_compute_nodes:
+  "{{ cluster_prefix }}1":
+    ip: '172.16.1.1'
+    mac: '00:0A:AA:AA:AA:01'
+    ipoib: '192.168.1.1'
+    bmc: '10.16.1.1'
+  "{{ cluster_prefix }}2":
+    ip: '172.16.1.2'
+    mac: '00:0A:AA:AA:AA:02'
+    ipoib: '192.168.1.2'
+    bmc: '10.16.1.2'
+  "{{ cluster_prefix }}3":
+    ip: '172.16.1.3'
+    mac: '00:0A:AA:AA:AA:03'
+    ipoib: '192.168.1.3'
+    bmc: '10.16.1.3'
+  "{{ cluster_prefix }}4":
+    ip: '172.16.1.4'
+    mac: '00:0A:AA:AA:AA:04'
+    ipoib: '192.168.1.4'
+    bmc: '10.16.1.4'
+  "{{ cluster_prefix }}5":
+    ip: '172.16.1.5'
+    mac: '00:0A:AA:AA:AA:05'
+    ipoib: '192.168.1.5'
+    bmc: '10.16.1.5'
+  "{{ cluster_prefix }}6":
+    ip: '172.16.1.6'
+    mac: '00:0A:AA:AA:AA:06'
+    ipoib: '192.168.1.6'
+    bmc: '10.16.1.6'
+  "{{ cluster_prefix }}7":
+    ip: '172.16.1.7'
+    mac: '00:0A:AA:AA:AA:07'
+    ipoib: '192.168.1.7'
+    bmc: '10.16.1.7'
+  "{{ cluster_prefix }}8":
+    ip: '172.16.1.8'
+    mac: '00:0A:AA:AA:AA:08'
+    ipoib: '192.168.1.8'
+    bmc: '10.16.1.8'
+
+#
+# BMC Information
+#
+cluster_bmc_username: 'unknown'
+cluster_bmc_password: 'unknown'
+
+#
+# Central syslog server 
+#
+syslog_master_remote_host: "*.info @usrc-log.usrc.gov:514"
+syslog_compute_remote_host: "*.* @{{ cluster_sms_ip }}:514"
+
+#
+# BOS Mirror if using local repo
+#
+#warewulf_BOS_MIRROR: "http://localhost"
+
+#
+# OpenHPC Optional Components
+#
+# HSN Components
+enable_ib: false
+enable_ipoib: false
+enable_opensm: false
+enable_opa: false
+enable_opafm: false
+
+# Warewulf Additional Options
+enable_kargs: false
+
+# 3rd Party Components
+enable_clustershell: false
+enable_ipmisol: false
+enable_ganglia: false
+enable_genders: false
+enable_mrsh: false
+enable_pdsh: true
+enable_nagios: false
+enable_powerman: false
+
+# Filesystem Components
+enable_beegfs_client: false
+enable_lustre_client: false
+
+# Development Tools
+enable_mpi_defaults: true
+enable_pmix: true
+enable_intel_packages: false
+
+#
+# Slurm Configs
+#
+slurm_config_path: "/etc/slurm"
+slurmctld_hostname: "{{ cluster_sms_hostname }}"
+slurmctld_addr: "{{ cluster_sms_ip }}"
+#slurmctld_backup: "{{ cluster_sms_hostname }}"
+slurmdbd_hostname: "{{ cluster_sms_hostname }}"
+slurm_clustername: "{{ cluster_name }}"
+
+# Variables in the *.conf.j2 files
+slurm_controlmachine: "{{ slurmctld_hostname }}"
+slurm_control_addr: "{{ slurmctld_addr }}"
+#slurm_backupcontroller: "{{ slurmctld_backup }}"
+slurm_dbdaddr: "{{ slurmdbd_hostname }}"
+slurm_dbdhost: "{{ slurmdbd_hostname }}"
+#slurm_jobcomphost: "{{ slurmdbd_hostname }}"
+#slurm_accountingstoragehost: "localhost"
+#slurm_salloc_str: "/opt/slurm/bin/srun -n1 -N1 --mem-per-cpu=0 --pty --preserve-env --mpi=none $SHELL"
+slurm_pam_sshd: "account    required     pam_slurm.so"
+
+slurm_computenodes: |
+  NodeName={{ cluster_prefix }}[1-{{ cluster_num_computes }}] Sockets=1 CoresPerSocket=1 ThreadsPerCore=1 Feature=compute
+slurm_partitions: |
+  PartitionName=normal Nodes={{ cluster_prefix }}[1-{{ cluster_num_computes }}] Default=YES DefaultTime=1:00:00 MaxTime=24:00:00 State=UP
+
+slurm_gres_nodes: []
+
+#
+# Powerman
+#
+powerman_node:
+  - node "{{ cluster_prefix }}[1-8]" "ipmi0" "p{{ cluster_prefix }}[1-8]"
+
+powerman_device:
+  - device  "ipmi0"  "ipmipower"  "/usr/sbin/ipmipower -D lanplus -u root -D LAN_2_0 -h p{{ cluster_prefix }}[1-8] |&"
+
+#
+# Cluster Compute Kernel Arguments
+#
+cluster_kernel_args: 'acpi_pad.disable=1'
+
+#
+# BeeGFS Settings
+#
+beegfs_sysmgmtd_host: '172.17.1.16'
+beegfs_test_mount_on_master: false
+
+#
+# Lustre Settings
+#
+lustre_mgs_fs_name: '192.168.100.254@o2ib:/lustre1'
+lustre_test_mount_on_master: false
+lustre_mnt_path: '/mnt/lustre'
+
+#
+# Warewulf kargs to bootstrap Kernel
+#
+warewulf_bootstrap_kargs: 'acpi_pad.disable=1'
+
+#
+# Nagios Settings
+#
+nagios_web_password: 'unknown'
+
+#
+# Export and Mount Options for NFS
+#
+warewulf_bos_fstab:
+  - "{{ cluster_sms_ip }}:/home /home nfs nfsvers=3,rsize=1024,wsize=1024,cto 0 0"
+  - "{{ cluster_sms_ip }}:/opt/ohpc/pub /opt/ohpc/pub nfs nfsvers=3 0 0"
+
+warewulf_nfs_exports:
+  - "/home *(rw,no_subtree_check,fsid=10,no_root_squash)"
+  - "/opt/ohpc/pub *(ro,no_subtree_check,fsid=11)"
+
+#
+# Cluster LMOD Paths
+#
+cluster_lmod_admin_paths: '/opt/ohpc/admin/modulefiles:/opt/ohpc/pub/modulefiles'
+cluster_lmod_user_paths: '/opt/ohpc/pub/modulefiles'

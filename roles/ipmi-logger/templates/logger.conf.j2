@@ -1,0 +1,69 @@
+{{ ansible_managed | comment }}
+# Directory containing scripts defining actions to be taken on
+# ${LOG_SEL_ADDITIONS} and ${LOG_SENSOR_CURRENT}
+ACTION_DIR=/etc/ipmi-logger/actions.d
+
+# Number of hosts to query at once
+FANOUT=256
+
+# output format
+# 1 - default
+# 2 - csv
+# 3 - key/value pairs
+FORMAT_SENSOR=3
+
+# The following variables are used to build host range expressions
+# used for a cluster's hosts and IPMI interfaces.
+# See man pages of pexec and ipmi-sensors for info about host range expressions.
+# There should be a one-to-one relationship between hosts and ipmi interfaces.
+#
+# example:
+# HOST_IPMI_PREFIX="p"
+# HOST_PREFIX="kit"
+# HOST_RANGES="[001-032],-fe,-io[1-8]"
+#
+# yields
+#
+# hosts="kit[001-032],kit-fe,kit-io[1-8]"
+# hosts_ipmi="pkit[001-032],pkit-fe,pkit-io[1-8]"
+HOST_IPMI_PREFIX="{{ ipmi_logger_ipmi_prefix }}"
+HOST_PREFIX="{{ ipmi_logger_prefix }}"
+HOST_RANGES="{{ ipmi_logger_ranges }}"
+
+# Include the local host's SEL and sensors?
+# This is done separately from the above host ranges.
+# 0 - no
+# 1 - yes
+INCLUDE_LOCALHOST=1
+
+# 1 - send data to separate log files only
+# 2 - send data to syslog only
+# 3 - send data to separate log files and syslog
+LOG=1
+
+# The additions log is created by comparing each host's current SEL to the most
+# recent, previously gathered, non-empty SEL. Current and previous SELs are
+# stored in per-host logs that are extracted from a cluster log.
+LOG_SEL_ADDITIONS=/var/log/ipmi/sel-additions.log
+LOG_SEL_CURRENT=/var/log/ipmi/sel-current
+LOG_SEL_CLUSTER=${LOG_SEL_CURRENT}/cluster.log.gz
+LOG_SEL_ERROR=${LOG_SEL_CURRENT}/error.log
+LOG_SEL_PREVIOUS=/var/log/ipmi/sel-previous
+
+LOG_SENSOR=/var/log/ipmi/sensor.log
+LOG_SENSOR_CURRENT=/var/log/ipmi/sensor-current.log
+
+# Send logs to daemon served by server:port
+# "" - system default
+LOG_SERVER=""
+LOG_SERVER_PORT=""
+
+# Ratelimit logging (see /etc/systemd/journald.conf)
+# This is unnecessary if sending logs to remote server
+# 0 - disable
+RATELIMIT_BURST=0
+RATELIMIT_INTERVAL=0
+
+# Query timeout (milliseconds)
+TIMEOUT=2000
+

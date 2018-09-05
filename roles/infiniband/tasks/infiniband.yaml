@@ -1,0 +1,76 @@
+---
+
+- name: infiniband, gather os specific variables
+  set_fact:
+    infiniband_packages:
+      - '@InfiniBand Support' 
+      - 'infiniband-diags'
+      - 'mstflint'
+  when: ansible_distribution == "RedHat"
+
+- name: infiniband, gather os specific variables
+  set_fact:
+    infiniband_packages:
+      - '@InfiniBand Support' 
+      - 'infinipath-psm'
+      - 'infiniband-diags'
+      - 'mstflint'
+  when: ansible_distribution == "CentOS"
+
+- name: infiniband, gather os specific variables
+  set_fact:
+    infiniband_packages:
+      - libibmad5
+      - librdmacm1
+      - rdma
+      - infinipath-psm
+      - dapl-devel
+      - dapl-utils
+      - libibverbs
+  when: ansible_distribution == "SLES"
+
+- name: infiniband, Install InfiniBand Support
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - '{{ infiniband_packages }}'
+
+- name: infiniband, Install InfiniBand in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - '{{ infiniband_packages }}'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: infiniband, copy udev rules file on SLES
+  copy:
+    src: /opt/ohpc/pub/examples/udev/60-ipath.rules
+    remote_src: true
+    dest: /etc/udev/rules.d/60-ipath.rules
+  when: ansible_distribution == "SLES"
+
+- name: infiniband, check if rdma is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled rdma
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: infiniband, enable rdma in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable rdma
+  when: '"disabled" in result.stdout'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: infiniband, enable rdma
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+    - rdma

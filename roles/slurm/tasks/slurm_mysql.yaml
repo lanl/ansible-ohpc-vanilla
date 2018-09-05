@@ -1,0 +1,99 @@
+---
+
+- name: slurm_mysql, set package list for CentOS
+  set_fact:
+    slurm_mysql_packages:
+      - mariadb
+      - mariadb-server
+      - MySQL-python
+    slurm_mysql_service: mariadb
+  when: ansible_os_family == "RedHat"
+      
+- name: slurm_mysql, set package list for SLES
+  set_fact:
+    slurm_mysql_packages:
+      - mariadb
+      - mariadb-server
+      - python-mysql
+    slurm_mysql_service: mysql
+  when: ansible_distribution == "SLES"
+      
+# Install mariadb and dependencies if necessary
+- name: slurm_mysql, Install mariadb if not present
+  #environment: '{{ proxy_env }}'
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - '{{ slurm_mysql_packages }}'
+
+# Configure my.cnf
+- name: slurm_mysql, Configure mariadb for SLURM
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    owner: 'root'
+    group: 'root'
+    mode: 0400
+    backup: yes
+  notify: restart mariadb
+
+# Start and enable database
+- name: slurm_mysql, Start and enable mariadb
+  service:
+    name: '{{ slurm_mysql_service }}'
+    state: started
+    enabled: yes
+  when: not ansible_virtualization_type == 'docker'
+
+#
+# Remove default accounts and databases
+#
+
+# Removes anonymous user account for localhost
+- name: slurm_mysql, Remove anonymous user
+  mysql_user:
+    name: ''
+    host: localhost
+    check_implicit_admin: yes
+    state: absent
+  when: not ansible_virtualization_type == 'docker'
+
+#Ensure any default DBs are removed
+- name: slurm_mysql, Remove MySQL test database.
+  mysql_db:
+    name: test
+    state: absent
+  when: not ansible_virtualization_type == 'docker'
+
+# Setup the databases if necessary
+- name: slurm_mysql, Create a database slurm_acct_db and slurm_jobcomp if not present.
+  mysql_db:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - slurm_acct_db
+    - slurm_jobcomp
+
+#
+# Ensure /var/spool/slurm/backups exists
+#
+
+- name: slurm_mysql, Ensure /var/spool/slurm/backups/ exists
+  file:
+    path: /var/spool/slurm/backups/
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+# Backup databases
+- name: slurm_mysql, Dump all databases to hostname.sql
+  mysql_db:
+    state: dump
+    name: '{{ item }}'
+    target: /var/spool/slurm/backups/{{ ansible_hostname }}-{{ item }}-{{ ansible_date_time.date }}_{{ ansible_date_time.time }}.sql
+  with_items:
+    - slurm_acct_db
+    - slurm_jobcomp
+  changed_when: false

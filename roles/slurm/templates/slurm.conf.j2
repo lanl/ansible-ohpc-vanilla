@@ -1,0 +1,117 @@
+{{ ansible_managed | comment }}
+#
+# See the slurm.conf man page for more information.
+#
+ClusterName={{ slurm_clustername }}
+ControlMachine={{ slurm_controlmachine }}
+{% if slurm_control_addr is defined %}
+ControlAddr={{ slurm_control_addr }} 
+{% endif %}
+{% if slurm_backupcontroller is defined %}
+BackupController={{ slurm_backupcontroller }}
+{% endif %}
+#BackupAddr=
+#
+SlurmUser=root
+SlurmctldPort=6817
+SlurmdPort=6818
+AuthType=auth/munge
+#JobCredentialPrivateKey=
+#JobCredentialPublicCertificate=
+StateSaveLocation=/var/spool/slurm/ctld
+SlurmdSpoolDir=/var/spool/slurm/d
+SwitchType=switch/none
+MpiDefault=none
+SlurmctldPidFile=/var/run/slurmctld.pid
+SlurmdPidFile=/var/run/slurmd.pid
+ProctrackType=proctrack/pgid
+SallocDefaultCommand="srun -n1 -N1 --mem-per-cpu=0 --pty --preserve-env $SHELL -l"
+#PluginDir=
+#FirstJobId=
+#MaxJobCount=
+#PlugStackConfig=
+#PropagatePrioProcess=
+#PropagateResourceLimits=
+#PropagateResourceLimitsExcept=
+#Prolog=
+#Epilog=
+#SrunProlog=
+#SrunEpilog=
+#TaskProlog=
+#TaskEpilog=
+#TaskPlugin=
+#TrackWCKey=no
+#TreeWidth=50
+#TmpFS=
+#UsePAM=
+#
+# TIMERS
+SlurmctldTimeout=300
+SlurmdTimeout=300
+InactiveLimit=0
+MinJobAge=300
+KillWait=30
+Waittime=0
+#
+# SCHEDULING
+SchedulerType=sched/backfill
+#SchedulerAuth=
+#SelectType=select/linear
+FastSchedule=1
+#PriorityType=priority/multifactor
+#PriorityDecayHalfLife=14-0
+#PriorityUsageResetPeriod=14-0
+#PriorityWeightFairshare=100000
+#PriorityWeightAge=1000
+#PriorityWeightPartition=10000
+#PriorityWeightJobSize=1000
+#PriorityMaxAge=1-0
+#
+# LOGGING
+SlurmctldDebug=info
+SlurmctldLogFile=/var/log/slurmctld.log
+SlurmdDebug=info
+SlurmdLogFile=/var/log/slurmd.log
+JobCompType=jobcomp/none
+#JobCompLoc=
+#
+# ACCOUNTING
+#JobAcctGatherType=jobacct_gather/linux
+#JobAcctGatherFrequency=30
+#
+{% if slurm_accountingstoragehost is defined %}
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost={{ slurm_accountingstoragehost }}
+{% else %}
+AccountingStorageType=accounting_storage/filetxt
+#AccountingStorageHost=
+{% endif %}
+#AccountingStorageLoc=
+#AccountingStoragePass=
+#AccountingStorageUser=
+#
+# COMPUTE NODES
+# OpenHPC default configuration
+RebootProgram="/usr/sbin/reboot"
+ResumeTimeout=600
+PropagateResourceLimitsExcept=MEMLOCK
+Epilog=/etc/slurm/slurm.epilog.clean
+ReturnToService=1
+
+#
+# COMPUTE NODES
+#
+{% if slurm_computenodes is defined %}
+{{ slurm_computenodes }}
+{% else %}
+NodeName=c[1-4] Sockets=2 CoresPerSocket=8 ThreadsPerCore=2 State=UNKNOWN
+{% endif %}
+#
+# PARTITIONS
+#
+{% if slurm_partitions is defined %}
+{{ slurm_partitions }}
+{% else %}
+PartitionName=normal Nodes=c[1-4] Default=YES MaxTime=24:00:00 State=UP
+{% endif %}
+

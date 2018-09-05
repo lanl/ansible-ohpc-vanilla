@@ -1,0 +1,8 @@
+---
+limits_path: '/etc/security/limits.conf'
+
+limits_limits:
+  - "*    -       nofile     65535"
+  - "*    soft    memlock    unlimited"
+  - "*    hard    memlock    unlimited"
+

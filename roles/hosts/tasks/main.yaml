@@ -1,0 +1,15 @@
+---
+
+- name: check to see if a hosts file exists
+  local_action: stat path='{{ playbook_dir }}/files/{{ ansible_hostname }}/hosts/hosts'
+  register: result
+
+- name: hosts, copy in /etc/hosts file
+  copy:
+    src: '{{ playbook_dir }}/files/{{ ansible_hostname }}/hosts/hosts'
+    dest: '/etc/hosts'
+    owner: 'root'
+    group: 'root'
+    mode: 0444
+    backup: yes
+  when: result.stat.exists

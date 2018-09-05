@@ -1,0 +1,4 @@
+---
+
+journald_location: "/etc/systemd/journald.conf"
+

@@ -1,0 +1,16 @@
+---
+
+- name: restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+
+- name: restart gmond
+  systemd:
+    name: gmond
+    state: restarted
+
+- name: restart gmetad
+  systemd:
+    name: gmetad
+    state: restarted

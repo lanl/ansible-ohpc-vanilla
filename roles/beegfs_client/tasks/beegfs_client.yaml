@@ -1,0 +1,130 @@
+---
+
+- name: beegfs_client, Install beegfs packages
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - kernel-devel
+    - gcc
+    - beegfs-client
+    - beegfs-helperd
+    - beegfs-utils
+
+- name: beegfs_client, modify autobuild parameters
+  template:
+    src: beegfs-client-autobuild.conf.j2
+    dest: '/etc/beegfs/beegfs-client-autobuild.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: beegfs_client, Create BeeGFS client conf file
+  template:
+    src: beegfs-client.conf.j2
+    dest: '/etc/beegfs/beegfs-client.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: beegfs_client, start beegfs services on master
+  systemd:
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+  with_items:
+    - beegfs-helperd
+    - beegfs-client
+  when: beegfs_test_mount_on_master is defined and beegfs_test_mount_on_master
+
+- name: beegfs_client, copy repo file into BOS for CentOS
+  copy:
+    src: '/etc/yum.repos.d/beegfs-rhel7.repo'
+    remote_src: yes
+    dest: '{{ compute_bos_path }}/etc/yum.repos.d/beegfs-rhel7.repo'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify:
+    - rebuild vnfs
+    - rebuild image
+  when: ansible_os_family == "RedHat"
+
+- name: beegfs_client, copy repo file into BOS for SUSE
+  copy:
+    src: '/etc/zypp/repos.d/beegfs.repo'
+    remote_src: yes
+    dest: '{{ compute_bos_path }}/etc/zypp/repos.d/beegfs.repo'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify:
+    - rebuild vnfs
+    - rebuild image
+  when: ansible_distribution == "SLES"
+
+- name: beegfs_client, Install BeeGFS in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - beegfs-client
+    - beegfs-helperd
+    - beegfs-utils
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: beegfs_client, modify autobuild parameters
+  template:
+    src: bos_beegfs-client-autobuild.conf.j2
+    dest: '{{ compute_bos_path }}/etc/beegfs/beegfs-client-autobuild.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: beegfs_client, remove auto build in BOS
+  file:
+    path: '{{ compute_bos_path }}/var/lib/beegfs/client/force-auto-build'
+    state: absent
+
+- name: beegfs_client, check to see if beegfs-helperd is enabled in BOS
+  command: 'chroot {{ compute_bos_path }} systemctl is-enabled beegfs-helperd'
+  register: helperd_result
+  failed_when: 'helperd_result.rc > 1'
+  changed_when: 'helperd_result.rc == 1'
+
+- name: beegfs_client, check to see if beegfs-client is enabled in BOS
+  command: 'chroot {{ compute_bos_path }} systemctl is-enabled beegfs-client'
+  register: client_result
+  failed_when: 'client_result.rc > 1'
+  changed_when: 'client_result.rc == 1'
+
+- name: beegfs_client, enable services in BOS
+  command: 'chroot {{ compute_bos_path }} systemctl enable {{ item }}'
+  with_items:
+    - beegfs-helperd
+    - beegfs-client
+  when: '"disabled" in helperd_result.stdout
+        or "disabled" in client_result.stdout'
+
+- name: beegfs_client, copy beegfs-client file into BOS
+  copy:
+    src: /etc/beegfs/beegfs-client.conf
+    remote_src: yes
+    dest: '{{ compute_bos_path }}/etc/beegfs/beegfs-client.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+  notify:
+    - rebuild vnfs
+    - rebuild image

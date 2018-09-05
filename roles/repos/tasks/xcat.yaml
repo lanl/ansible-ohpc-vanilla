@@ -1,0 +1,24 @@
+---
+
+- name: repos, Add xCAT repo
+  yum_repository:
+    name: xCAT-2-core
+    file: xcat
+    description: "xCAT 2 Core packages"
+    baseurl: "http://xcat.org/files/xcat/repos/yum/latest/xcat-core"
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: "http://xcat.org/files/xcat/repos/yum/latest/xcat-core/repodata/repomd.xml.key"
+  when: ansible_os_family == "RedHat"
+
+- name: repos, Add xCAT-dep repo
+  yum_repository:
+    name: xCAT-dep
+    file: xcat
+    description: "xCAT 2 dependencies"
+    baseurl: "http://xcat.org/files/xcat/repos/yum/xcat-dep/rh7/x86_64"
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: "http://xcat.org/files/xcat/repos/yum/xcat-dep/rh7/x86_64/repodata/repomd.xml.key"
+  when: ansible_os_family == "RedHat"
+

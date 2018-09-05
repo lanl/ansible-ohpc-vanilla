@@ -1,0 +1,12 @@
+---
+
+xcat_bos_path: '/install/netboot/centos7.4/x86_64/compute/rootimg'
+
+xcat_bos_fstab:
+  - "{{ cluster_sms_ip }}:/home /home nfs nfsvers=3,rsize=1024,wsize=1024,cto 0 0"
+  - "{{ cluster_sms_ip }}:/opt/ohpc/pub /opt/ohpc/pub nfs nfsvers=3 0 0"
+
+xcat_nfs_exports:
+  - "/home *(rw,no_subtree_check,fsid=10,no_root_squash)"
+  - "/opt/ohpc/pub *(ro,no_subtree_check,fsid=11)"
+  

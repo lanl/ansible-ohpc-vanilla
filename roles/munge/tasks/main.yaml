@@ -1,0 +1,29 @@
+---
+
+- name: munge, Ensure munge is installed
+  #environment: "{{ proxy_env }}"
+  package:
+    name: munge-ohpc
+    state: present
+
+- name: munge, Check to see if the munge.key exists
+  local_action:
+    stat path=/etc/ansible/files/fc_munge.key
+  register: munge_key
+  ignore_errors: True
+
+- name: munge, munge key
+  file:
+    src: /etc/ansible/files/fc_munge.key
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: 0400
+  when: munge_key.stat.exists
+
+- name: munge, start munge
+  systemd:
+    name: munge
+    state: started
+    enabled: yes
+  when: not ansible_virtualization_type == "docker"

@@ -1,0 +1,19 @@
+---
+
+- name: repos, import virtualbox rpm key
+  rpm_key:
+    state: present
+    key: "https://www.virtualbox.org/download/oracle_vbox.asc"
+
+- name: repos, include virtualbox repos
+  yum_repository:
+    name: virtualbox
+    description: "Oracle Linux / RHEL / CentOS-$releasever / $basearch - VirtualBox"
+    baseurl: "http://download.virtualbox.org/virtualbox/rpm/el/$releasever/$basearch"
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: no
+    gpgkey: "https://www.virtualbox.org/download/oracle_vbox.asc"
+
+- name: repos, make virtualbox repo cache
+  command: "yum -q makecache -y --disablerepo='*' --enablerepo='virtualbox'"

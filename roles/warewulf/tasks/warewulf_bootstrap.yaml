@@ -1,0 +1,29 @@
+---
+
+- name: warewulf_bootstrap, build bootstrap.conf file
+  template:
+    src: 'bootstrap.conf.j2'
+    dest: '/etc/warewulf/bootstrap.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify: rebuild vnfs
+
+- name: warewulf_bootstrap, check for bootstrap image
+  shell: 'wwsh bootstrap list -1'
+  register: bootstrap_result
+  changed_when: false
+  failed_when: 'bootstrap_result.rc > 1'
+
+- name: warewulf_bootstrap, build bootstrap image if it does not exist
+  shell: 'wwbootstrap $(uname -r)'
+  register: build_result
+  failed_when: '"ERROR" in build_result.stderr'
+  when: 'bootstrap_result.rc == 1'
+
+- name: warewulf_bootstrap, rebuild bootstrap image if it exists
+  shell: 'wwsh bootstrap rebuild $(uname -r)'
+  register: rebuild_result
+  failed_when: 'rebuild_result.rc != 0'
+  when: 'bootstrap_result.rc == 0'

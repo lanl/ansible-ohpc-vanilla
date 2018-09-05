@@ -1,0 +1,4 @@
+{{ ansible_managed | comment }}
+{% for key in cluster_compute_nodes.iteritems()|sort %}
+{{ key }}
+{% endfor %}

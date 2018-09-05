@@ -1,0 +1,51 @@
+---
+
+- name: mrsh, install mrsh
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - mrsh-ohpc
+    - mrsh-rsh-compat-ohpc
+
+- name: mrsh, install mrsh in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - mrsh-ohpc
+    - mrsh-rsh-compat-ohpc
+    - mrsh-server-ohpc
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: mrsh, copy in mrlogind port settings into /etc/services
+  lineinfile:
+    path: /etc/services
+    state: present
+    regexp: '^mlogin'
+    insertafter: '^iiop            535/udp'
+    line: 'mlogin          541/tcp                         # mrlogind'
+
+- name: mrsh, copy in mshell port settings into /etc/services
+  lineinfile:
+    path: /etc/services
+    state: present
+    regexp: '^mshell'
+    insertafter: '^irtrans         21000/udp               # IRTrans Control'
+    line: 'mshell          21212/tcp               # mrshd'
+
+- name: mrsh, check to see if xinetd is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled xinetd
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: mrsh, enable xinetd in BOS
+  command: 'chroot {{ compute_bos_path }} systemctl enable xinetd'
+  when: '"disabled" in result.stdout'
+  notify:
+    - rebuild vnfs
+    - rebuild image

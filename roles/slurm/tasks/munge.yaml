@@ -1,0 +1,29 @@
+---
+
+#
+# Ensure munge.key file matches for SDB,drm and login nodes 
+#
+
+- name: verify /etc/munge exists
+  file:
+    path: /etc/munge  
+    owner: munge
+    group: munge
+    mode:  0700
+    state: directory
+
+- name: copy munge key in place
+  copy:
+    src: munge.key
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode:  0400
+  notify: 
+  - restart munge
+
+- name: ensure munge is started
+  service:
+    name: munge
+    state: started
+    enabled: true

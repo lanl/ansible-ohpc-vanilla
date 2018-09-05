@@ -1,0 +1,29 @@
+---
+
+- name: restart xinetd
+  systemd:
+    name: xinetd
+    state: restarted
+
+- name: restart dhcpd
+  systemd:
+    name: dhcpd
+    state: restarted
+
+- name: reload exportfs
+  command: exportfs -a
+
+- name: wwsh resync files
+  command: 'wwsh file resync passwd shadow group slurm.conf munge.key'
+  listen: 'rebuild vnfs'
+  when: '"warewulf" in group_names'
+
+- name: rebuild vnfs
+  command: 'wwvnfs --chroot {{ compute_bos_path }}'
+  listen: 'rebuild vnfs'
+  when: '"warewulf" in group_names'
+
+- name: rebuild vnfs
+  command: 'wwsh -y provision set "{{ cluster_prefix }}*" --vnfs={{ warewulf_vnfs_os }}'
+  listen: 'rebuild vnfs'
+  when: '"warewulf" in group_names'

@@ -1,0 +1,44 @@
+---
+
+whereami: "#production/group_vars/usrc"
+
+# Our Ansible Master
+# The pubkey for root on ans-master
+ansible_id_rsa_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdvWjODTccwl+Hds/JBv15O088tWv86cQHFv47VbYOG3NoIJiMSj1mouMPPrq2r08h9pHqDT7XXEQBAxdzm0cbRjScoIQRLLVx75eqVuBATbxdHDsIw8tEuqVtHCuvaui2S+aQRdha2HNodP5zSxNDK9x3FNeOZcan6wfZ53pXQA086CoYTtVUWPEa7wSQPp3MzDe1otAE0E7aQJu81lznPUHzyRC37SnIe8CJt3eucdHo5asUrNupaTDXezoIRAuFLWPp+Xy0987KDv6FZVC51mpdWrxY8LtmUOXPH4EN9K7Yy2TqQzlut4UGR8JhEPtHW6Snstwewro7qEcbWMpz root@ans-master.usrc"
+
+# Our Configuration Management (CM) server
+cm: "usrc-cm"
+cm_ipaddr: "10.0.3.46"
+## The pubkey for root on usrc-cm
+cm_id_rsa_key: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAyHsCtZRQ6qUXcXDo3RJYOhTJh6o1r9A6lfC++tC8dRJMUTyD+inztEiw6IrhbKJkXIZg1e0h2N89G4giQEWuYgfy9HRK2eI1qn6NoIMeZR9XdqbtNREtfIyJZXQveZ4+K+VYa9wmOwdFlpcsHReZO70SKIw6wo1NTB73r15Ie0F4WF1tcXmMt5DEQWbtvE1tO7BSgYrIespKZnWwt0TPtGZ06eWYdRJv+G93L4GwnUaS+kOeE3ZC9Np1sg5CU4/swPwDV6wkqxaFONI6f0fXULxutgfhK5jPgRPoKFzJOisPyC2eeaPnIkr/jZajaeORsGPjpkgMIPFrvj5+ZlGBHw== root@usrc-cm.usrc"
+
+# Domain Name servers
+dns_servers:
+  - search: usrc
+    nameservers:
+      - "10.0.3.145"
+
+# Our User Gateway server
+# If there is no gateway then set hostname and ssh_key to empty ("")
+gateway:
+  gate1:
+   gateway_hostname: "usrc-gate"
+   gateway_ipaddr: "10.0.3.146"
+   gateway_comment: "{{ whereami }}"
+   gateway_ssh_key: "usrc-gate.usrc,usrc-gate,10.0.3.146 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5vHR2yGbgEJUR7J1BSBCidhR9P0O89MtYX/hBjWZ9kdGZpUJvVZWyWtzGnE5S/EVWw7J+SF8EX6MeGA40CMkBzqJAv2soRQXo0/XeYEOxAF0WOo/K135XCke9n4g4G6u5svApLV15YGvVTcgWnHDkLyClFVX2FHgDTYcf5LZlqrv9Rdl1NyQ9K5Q8ArIlgYxXvaRvGpSbyRi/YqX+vzot37AFpNd5ZUBAaLropVtcjFD7P7s7xbVvIS2IWBjXA6o/OJ/OczcMVtwrc6Jtr35Cwd39XWFd/tvm42l82hWQLSD00KKFBRS0gtxD5F+lB+i3oHEKaAOtzFoFfhXr0Irnw=="
+
+# Network Time Protocol
+ntp_server: usrc-cm.usrc
+
+# Not sure about this. We have no common local-update repos like this ... not all systems are even RHEL.
+repo_local_updates_yum_repo:
+  - baseurl: "https://usrc-dist.lanl.gov/distros/RHEL7/LANL/arch/local-updates-usrc/RPMS"
+    enabled: "no"
+
+# Entries that should be in everyone's /etc/ssh/ssh_known_hosts
+ssh_known_hosts:
+  ssh_known_hosts1:
+    ssh_known_hosts_cm_ssh_key: "usrc-cm.usrc,usrc-cm,10.0.3.46 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA1BAZOFuGYlc8SGz/Fhhv1M1S6Qhuyw/7LHLunGO5lj0KW43lvVYYqHb+ofjwlKPikAwfYV4mObLe0SK6Vi0hoPFBOCzeXBmbDd1WczaKbKd/lWzaXxfOMSUuVAZsAfNZwd8PGs7CM0j3SGkFsLKaWn8qOrK3RWID/+cbaHPfOedPscBMw2NPH5piq/HfYqo1w8nvXc7mfWqfBYiqn1F5MToeChZapCPrQ9/UC6fg2DPYNAV9yC4J8sHUC0X5AfttbiwK+gIZSqFLLDf9q3LgZkBkALFE80pR2KDNlrX7c6fAb+nweVKmteRedp7PS6jzzsS7I0zpn6yB/e/r8eXsPQ=="
+
+# Central syslog server 
+syslog_remote_host: "*.info @usrc-log.usrc:514"

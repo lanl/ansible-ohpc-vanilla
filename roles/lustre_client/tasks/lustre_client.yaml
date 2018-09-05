@@ -1,0 +1,69 @@
+---
+
+- name: lustre_client, Install lustre client packages
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - lustre-client-ohpc
+    - kmod-lustre-client-ohpc
+
+- name: lustre_client, Install lustre_client in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - lustre-client-ohpc
+    - kmod-lustre-client-ohpc
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: luste_client, create lustre dir
+  file:
+    path: '{{ compute_bos_path }}{{ lustre_mnt_path }}'
+    state: directory
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: lustre_client, generate lustre.conf file
+  template:
+    src: 'lustre.conf.j2'
+    dest: '/etc/modprobe.d/lustre.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: lustre_client, copy lustre.conf into BOS
+  copy:
+    src: "/etc/modprobe.d/lustre.conf"
+    remote_src: yes
+    dest: '{{ compute_bos_path }}/etc/modprobe.d/lustre.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: lustre_client, test mount on master
+  mount:
+    path: '{{ lustre_mnt_path }}'
+    src: '{{ lustre_mgs_fs_name }}'
+    fstype: 'lustre'
+    opts: 'localflock'
+    fstab: '/tmp/fstab'
+    state: mounted
+  when: lustre_test_mount_on_master is defined and lustre_test_mount_on_master
+
+- name: lustre_client, remove temp fstab
+  file:
+    path: '/tmp/fstab'
+    state: absent

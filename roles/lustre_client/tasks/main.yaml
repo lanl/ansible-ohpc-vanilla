@@ -1,0 +1,5 @@
+---
+
+- name: lustre_client, install lustre client if enabled
+  import_tasks: lustre_client.yaml
+  when: enable_lustre_client is defined and enable_lustre_client

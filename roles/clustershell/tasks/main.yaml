@@ -1,0 +1,5 @@
+---
+
+- name: clustershell, install clustershell if enabled
+  import_tasks: clustershell.yaml
+  when: enable_clustershell is defined and enable_clustershell

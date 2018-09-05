@@ -1,0 +1,12 @@
+---
+
+- name: packages, install additional packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages_additional_packages }}"
+
+- name: packages, keep installed packages up to date
+  package:
+    name: '*'
+    state: latest

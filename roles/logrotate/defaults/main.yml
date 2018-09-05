@@ -1,0 +1,6 @@
+---
+logrotate_d: []
+logrotate_rwtab:
+  dirs:
+    - /var/lib/logrotate
+...

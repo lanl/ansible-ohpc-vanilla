@@ -1,0 +1,40 @@
+---
+#
+# Networking Information
+#
+cluster_sms_hostname: 'xc-master'
+cluster_sms_eth_internal: 'eth1'
+
+cluster_sms_ip: '172.16.0.254'
+cluster_internal_netmask: '255.255.0.0'
+cluster_sms_hsn_ip: '192.168.0.254'
+cluster_sms_bmc_ip: '10.16.1.254'
+
+cluster_compute_ip: '172.16.1'
+cluster_compute_netmask: '255.255.0.0'
+
+cluster_bmc_ip: '10.16.1'
+cluster_bmc_netmask: '255.255.0.0'
+
+cluster_hsn_ip: '192.168.0'
+cluster_hsn_netmask: '255.255.0.0'
+
+network_ether_interfaces:
+  - device: eth0 
+    name: eth0
+    bootproto: dhcp
+    onboot: yes
+  - device: eth1
+    name: eth1
+    bootproto: static
+    onboot: yes
+    address: '{{ cluster_sms_ip }}'
+    netmask: '{{ cluster_internal_netmask }}'
+  - device: ib0
+    name: ib0
+    bootproto: static
+    onboot: yes
+    address: '{{ cluster_sms_hsn_ip }}'
+    netmask: '{{ cluster_hsn_netmask }}'
+
+ntp_server: 'pool.ntp.org'

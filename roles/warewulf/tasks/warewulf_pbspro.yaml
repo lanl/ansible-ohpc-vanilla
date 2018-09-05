@@ -1,0 +1,35 @@
+---
+
+- name: warewulf_pbspro, configure pbs.conf in BOS
+  template:
+    src: pbs.conf.j2
+    dest: '{{ compute_bos_path }}/etc/pbs.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify: rebuild vnfs
+
+- name: warewulf_pbspro, run pbs_habitat
+  command: '{{ compute_bos_path }}/opt/pbs/libexec/pbs_habitat'
+
+- name: warewulf_pbspro, configure mom_priv/config in BOS
+  template:
+    src: mom_priv_config.j2
+    dest: '{{ compute_bos_path }}/var/spool/pbs/mom_priv/config'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify: rebuild vnfs
+
+- name: warewulf_pbspro, check to see if pbs is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled pbs
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: warewulf_files, enable pbs in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable pbs
+  when: '"disabled" in result.stdout'
+  notify: rebuild vnfs

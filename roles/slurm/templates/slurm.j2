@@ -1,0 +1,10 @@
+#!/bin/bash
+{{ ansible_managed | comment }}
+if [[ $(/usr/bin/scontrol show daemons) == *slurmd* ]]; then
+  ulimit -H -l unlimited
+  ulimit -S -l 32768
+  SLURMD_OPTIONS="-f /etc/slurm/slurm.conf"
+fi
+if [[ $(/usr/bin/scontrol show daemons) == *slurmctld* ]]; then
+  SLURMCTLD_OPTIONS="-f /etc/slurm/slurm.conf"
+fi

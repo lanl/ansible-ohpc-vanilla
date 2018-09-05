@@ -1,0 +1,60 @@
+---
+
+- name: omnipath, Install Omnipath Support
+  #environment: "{{ proxy_env }}"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - opa-basic-tools
+
+- name: omnipath, Install OmniPath in BOS
+  package:
+    name: "{{ item }}"
+    installroot: "{{ compute_bos_path }}"
+    state: present
+  with_items:
+    - opa-basic-tools
+    - libpsm2
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: omnipath, check to see if rdma is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled rdma
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: omnipath, enable rdma in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable rdma
+  when: '"disabled" in result.stdout'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: omnipath, enable rdma
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+    - rdma
+
+- name: omnipath, Install Omnipath Fabric Manager
+  #environment: "{{ proxy_env }}"
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - opa-fm
+  when: enable_opafm is defined and enable_opafm
+
+- name: omnipath, enable opafm
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+    - opafm
+  when: enable_opafm is defined and enable_opafm

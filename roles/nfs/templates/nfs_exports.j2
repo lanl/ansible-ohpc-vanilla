@@ -1,0 +1,5 @@
+{{ ansible_managed | comment }}
+
+{% for exports in nfs_exports %}
+{{ exports }}
+{% endfor %}

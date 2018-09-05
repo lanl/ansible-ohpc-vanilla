@@ -1,0 +1,10 @@
+---
+
+- name: journald, create journald.conf file
+  template:
+    src: journald.conf.j2
+    dest: "{{ journald_location }}"
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes

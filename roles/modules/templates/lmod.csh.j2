@@ -1,0 +1,35 @@
+{{ ansible_managed | comment }}
+#!/bin/sh
+# -*- shell-script -*-
+########################################################################
+#  This is the system wide source file for setting up
+#  modules:
+#
+########################################################################
+
+if ( $?SLURM_NODELIST ) then
+    exit 0
+endif
+
+if ( $?PBS_NODEFILE ) then
+    exit 0
+endif
+
+setenv LMOD_SETTARG_CMD ":"
+setenv LMOD_FULL_SETTARG_SUPPORT "no"
+setenv LMOD_COLORIZE "no"
+setenv LMOD_PREPEND_BLOCK "normal"
+
+
+if ( `id -u` == "0" ) then
+   setenv MODULEPATH "{{ cluster_lmod_admin_paths }}"
+else
+   setenv MODULEPATH "{{ cluster_lmod_user_paths }}"
+endif
+
+# Initialize modules system
+source /opt/ohpc/admin/lmod/lmod/init/csh >/dev/null
+
+# Load baseline OpenHPC environment
+module try-add ohpc
+

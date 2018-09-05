@@ -1,0 +1,11 @@
+{{ ansible_managed | comment }}
+[rhel-7-arm]
+name=Linux $releasever - $basearch
+baseurl=file:///var/www/html/rhel-7-for-arm-64-rpms
+enabled=1
+gpgcheck=0
+[rhel-7-optional-arm]
+name=Linux $releasever - $basearch
+baseurl=file:///var/www/html/rhel-7-for-arm-64-optional-rpms
+enabled=1
+gpgcheck=0

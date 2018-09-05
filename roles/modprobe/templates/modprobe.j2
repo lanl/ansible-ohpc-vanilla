@@ -1,0 +1,2 @@
+{{ ansible_managed | comment }}
+{% if item.value.contents is defined %}{{ item.value.contents }}{% endif %}

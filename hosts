@@ -1,0 +1,7 @@
+# NOTICE
+# We are not using the default ansible 'hosts' file (/etc/ansible/hosts)
+# Systems are instead organized by environment, e.g.:
+#
+# Staging systems:	/etc/ansible/inventories/staging/hosts
+# Testbed systems:	/etc/ansible/inventories/testbed/hosts
+# Production systems:	/etc/ansible/inventories/production/hosts

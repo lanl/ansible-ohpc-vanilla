@@ -1,0 +1,25 @@
+---
+
+- name: conman, ensure conman is installed
+  #environment: "{{ proxy_env }}"
+  package:
+    name: conman-ohpc
+    state: present
+
+- name: conamn, create conman.conf file
+  template:
+    src: conman.conf.j2
+    dest: /etc/conman.conf
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes
+  notify: restart conman
+  no_log: true
+
+- name: conman, Ensure service is running
+  systemd:
+    name: conman
+    state: started
+    enabled: yes
+  when: not ansible_virtualization_type == "docker"

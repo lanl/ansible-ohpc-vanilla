@@ -1,0 +1,4 @@
+{{ ansible_managed | comment }}
+
+# Runs sacctmgr every 30 minutes to add new users
+*/30 * * * * root /usr/bin/sacctmgr -iQ load file=/etc/slurm/slurm_load.dat cluster={{ slurm_clustername }} > /var/spool/slurm/log/sacctmgr_cron.log 2>&1

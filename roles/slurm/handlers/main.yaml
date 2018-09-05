@@ -1,0 +1,25 @@
+---
+
+- name: restart slurmctld
+  systemd:
+    name: slurmctld
+    state: restarted
+  when: not ansible_virtualization_type == "docker"
+
+- name: restart slurmdbd
+  systemd:
+    name: slurmdbd
+    state: restarted
+  when: not ansible_virtualization_type == "docker"
+
+- name: restart mariadb
+  systemd:
+    name: '{{ slurm_mysql_service }}'
+    state: restarted
+  when: not ansible_virtualization_type == "docker"
+
+- name: restart munge
+  systemd:
+    name: munge
+    state: restarted
+  when: not ansible_virtualization_type == "docker"

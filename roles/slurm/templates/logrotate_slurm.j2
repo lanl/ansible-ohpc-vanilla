@@ -1,0 +1,9 @@
+{{ ansible_managed | comment }}
+
+/var/spool/slurm/backups/*sql {
+ missingok
+ nomail
+ postrotate
+        /usr/bin/find /var/spool/slurm/backups/ -name "ga-drm2-slurm*" -type f -mtime +30 -delete
+ endscript
+}

@@ -1,0 +1,43 @@
+---
+
+- name: warewulf_provision, set facts based on OS release
+  set_fact:
+    warewulf_vnfs_os: 'centos7.4'
+  when: ansible_distribution == "CentOS"
+
+- name: warewulf_provision, set facts based on OS release
+  set_fact:
+    warewulf_vnfs_os: 'rhel7.4'
+  when: ansible_distribution == "RedHat"
+
+- name: warewulf_provision, set facts based on OS release
+  set_fact:
+    warewulf_vnfs_os: 'sles12sp3'
+  when: ansible_distribution == "SLES"
+
+- name: warewulf_provision, check and see if nodes are already in the DB
+  shell: 'wwsh node list'
+  register: node_result
+  ignore_errors: true
+  changed_when: 'node_result.rc == 1'
+
+- name: warewulf_provision, Provision nodes in WW DB
+  command: 'wwsh -y node new {{ item.key }} --ipaddr={{ item.value.ip }} --hwaddr={{ item.value.mac }} -D {{ warewulf_compute_eth_provision }} --groupadd compute'
+  with_dict: '{{ cluster_compute_nodes }}'
+  when: 'node_result.stdout == "No nodes found"'
+
+- name: warewulf_provision, Add hosts to cluster
+  shell: 'wwsh -y provision set "{{ cluster_prefix }}*" --bootstrap=$(uname -r) --files=dynamic_hosts,passwd,group,shadow,network'
+  notify: restart dhcpd
+
+- name: warewulf_provision, Add arguments to bootstrap kernel
+  command: 'wwsh -y provision set "{{ cluster_prefix }}*" --kargs={{ warewulf_bootstrap_kargs }}'
+  when: enable_kargs is defined and enable_kargs
+
+- name: warewulf_provision, set ipmisol
+  command: 'wwsh -y provision set "{{ cluster_prefix }}*" --console=ttyS0,115200'
+  when: enable_ipmisol is defined and enable_ipmisol
+
+- name: warewulf_provision, run wwsh pxe update
+  command: 'wwsh pxe update'
+  ignore_errors: true

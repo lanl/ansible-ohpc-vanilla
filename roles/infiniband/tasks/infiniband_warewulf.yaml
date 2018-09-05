@@ -1,0 +1,21 @@
+---
+
+- name: infiniband_warewulf, Import ifcfg-ib0 into compute image
+  command: 'wwsh file import {{ item }}'
+  with_items:
+    - '/opt/ohpc/pub/examples/network/centos/ifcfg-ib0.ww'
+  notify: rebuild vnfs
+
+- name: infiniband_warewulf, set path for ifcfg-ib0 file
+  command: wwsh -y file set ifcfg-ib0.ww --path=/etc/sysconfig/network-scripts/ifcfg-ib0
+  notify: rebuild vnfs
+
+- name: infiniband_warewulf, define IPoIB network settings
+  command: 'wwsh -y node set {{ item.key }} -D ib0 --ipaddr={{ item.value.ipoib }} --netmask={{ cluster_hsn_netmask }}'
+  with_dict: '{{ cluster_compute_nodes }}'
+
+- name: infiniband_warewulf, set ifcfg file for ib0
+  command: 'wwsh -y provision set "{{ cluster_prefix }}*" --fileadd=ifcfg-ib0.ww'
+  register: result
+  changed_when: result.rc == 0
+  ignore_errors: true

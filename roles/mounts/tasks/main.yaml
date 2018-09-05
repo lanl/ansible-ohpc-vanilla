@@ -1,0 +1,10 @@
+---
+
+- name: mounts, Add mount points to fstab via mount
+  mount:
+    path: '{{ item.value.path }}'
+    src: '{{ item.value.src }}'
+    fstype: '{{ item.value.fstype }}'
+    state: mounted
+  with_dict: '{{ mounts_filesystems }}'
+  when: mounts_filesystems is defined

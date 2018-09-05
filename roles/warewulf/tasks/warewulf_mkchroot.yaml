@@ -1,0 +1,84 @@
+---
+
+- name: warewulf_mkchroot, Make BOS path
+  file:
+    path: '{{ compute_bos_path }}/dev'
+    state: directory
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  when: ansible_distribution == "SLES"
+
+- name: warewulf_mkchroot, create /dev/zero
+  command: 'mknod -m 666 {{ compute_bos_path }}/dev/zero c 1 5'
+  args:
+    creates: '{{ compute_bos_path }}/dev/zero'
+  when: ansible_distribution == "SLES"
+
+- name: warewulf_mkchroot, Make SLES BOS Image
+  command: wwmkchroot sles-12 '{{ compute_bos_path }}'
+  ignore_errors: true
+  when: ansible_distribution == "SLES"
+
+- name: warewulf_mkchroot, Make CentOS BOS Image
+  command: wwmkchroot centos-7 '{{ compute_bos_path }}'
+  environment:
+    YUM_MIRROR: '{{ warewulf_BOS_MIRROR }}'
+  when: ansible_distribution == "CentOS"
+
+- name: warewulf_mkchroot, Make RHEL BOS Image
+  command: wwmkchroot rhel-7 '{{ compute_bos_path }}'
+  environment:
+    YUM_MIRROR: '{{ warewulf_BOS_MIRROR }}'
+  when: ansible_distribution == "RedHat"
+
+- name: warewulf, copy in local repo to BOS image
+  template:
+    src: local.repo.j2
+    dest: '{{ compute_bos_path }}/etc/yum.repos.d/local.repo'
+  when: ansible_distribution == "RedHat"
+        and ansible_architecture == "aarch64"
+
+- name: warewulf_mkchroot, Install ohpc-base-compute in BOS
+  package:
+    name: ohpc-base-compute
+    installroot: '{{ compute_bos_path }}'
+    state: present
+
+- name: warewulf_mkchroot, Install additional packages in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - ntp
+    - kernel
+    - lmod-ohpc
+
+- name: warewulf_mkchroot, Install slurm packages in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - ohpc-slurm-client
+  when: enable_slurm is defined and enable_slurm
+
+- name: warewulf_mkchroot, Install pbspro packages in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - pbspro-execution-ohpc
+  when: enable_pbspro is defined and enable_pbspro
+
+- name: warewulf_mkchroot, Check to see if bootstrap image already exists
+  shell: 'wwsh bootstrap list | grep $(uname -r)'
+  register: bootstrap
+  ignore_errors: true
+  failed_when: '"FAILED" in bootstrap.stderr'
+
+- name: warewulf_mkchroot, Create bootstrap if image does not exist
+  shell: 'wwbootstrap $(uname -r)'
+  when: 'bootstrap.rc != 0'

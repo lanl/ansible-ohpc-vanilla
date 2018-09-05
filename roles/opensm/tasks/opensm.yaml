@@ -1,0 +1,11 @@
+---
+- name: opensm, install opensm
+  package:
+    name: "opensm"
+    state: "present"
+
+- name: opensm, start opensm
+  systemd:
+    name: "opensm"
+    enabled: yes
+    state: started

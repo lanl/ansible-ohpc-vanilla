@@ -1,0 +1,262 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+# Campus LAN: 10.0.3.0/24
+10.0.34.50      wa-master.newmexicoconsortium.org
+
+# BMC LAN: 192.168.0.0/24
+192.168.0.14	comanche14-bmc.localdomain comanche14-bmc c14-bmc.localdomain c14-bmc
+192.168.0.15	comanche15-bmc.localdomain comanche15-bmc c15-bmc.localdomain c15-bmc
+
+# USRC LAN: 10.15.3.0/24
+10.15.3.34  st-master.usrc st-master
+10.15.3.100	wa-master.usrc wa-master
+10.15.3.101	comanche14.usrc comanche14 c14
+10.15.3.102	comanche15.usrc comanche15 c15
+10.15.3.200	hpe-master.usrc hpe-master
+
+# CVLAN
+172.16.0.254 st-master-eno2d1.localdomain  st-master-eno2d1
+172.16.0.253 hpe-master-eno2d1.localdomain  hpe-master-eno2d1
+
+### ALL ENTRIES BELOW THIS LINE WILL BE OVERWRITTEN BY WAREWULF ###
+#
+# See provision.conf for configuration paramaters
+
+
+# Node Entry for node: st01 (ID=115)
+172.16.1.1              st01.localdomain st01 st01-eth0.localdomain st01-eth0
+192.168.1.1             st01-ib0.localdomain st01-ib0
+
+# Node Entry for node: st02 (ID=117)
+172.16.1.2              st02.localdomain st02 st02-eth0.localdomain st02-eth0
+192.168.1.2             st02-ib0.localdomain st02-ib0
+
+# Node Entry for node: st03 (ID=116)
+172.16.1.3              st03.localdomain st03 st03-eth0.localdomain st03-eth0
+192.168.1.3             st03-ib0.localdomain st03-ib0
+
+# Node Entry for node: st04 (ID=119)
+172.16.1.4              st04.localdomain st04 st04-eth0.localdomain st04-eth0
+192.168.1.4             st04-ib0.localdomain st04-ib0
+
+# Node Entry for node: st05 (ID=118)
+172.16.1.5              st05.localdomain st05 st05-eth0.localdomain st05-eth0
+192.168.1.5             st05-ib0.localdomain st05-ib0
+
+# Node Entry for node: st06 (ID=121)
+172.16.1.6              st06.localdomain st06 st06-eth0.localdomain st06-eth0
+192.168.1.6             st06-ib0.localdomain st06-ib0
+
+# Node Entry for node: st07 (ID=120)
+172.16.1.7              st07.localdomain st07 st07-eth0.localdomain st07-eth0
+192.168.1.7             st07-ib0.localdomain st07-ib0
+
+# Node Entry for node: st08 (ID=123)
+172.16.1.8              st08.localdomain st08 st08-eth0.localdomain st08-eth0
+192.168.1.8             st08-ib0.localdomain st08-ib0
+
+# Node Entry for node: st09 (ID=122)
+172.16.1.9              st09.localdomain st09 st09-eth0.localdomain st09-eth0
+192.168.1.9             st09-ib0.localdomain st09-ib0
+
+# Node Entry for node: st10 (ID=111)
+172.16.1.10             st10.localdomain st10 st10-eth0.localdomain st10-eth0
+192.168.1.10            st10-ib0.localdomain st10-ib0
+
+# Node Entry for node: st11 (ID=112)
+172.16.1.11             st11.localdomain st11 st11-eth0.localdomain st11-eth0
+192.168.1.11            st11-ib0.localdomain st11-ib0
+
+# Node Entry for node: st12 (ID=109)
+172.16.1.12             st12.localdomain st12 st12-eth0.localdomain st12-eth0
+192.168.1.12            st12-ib0.localdomain st12-ib0
+
+# Node Entry for node: st13 (ID=110)
+172.16.1.13             st13.localdomain st13 st13-eth0.localdomain st13-eth0
+192.168.1.13            st13-ib0.localdomain st13-ib0
+
+# Node Entry for node: st14 (ID=107)
+172.16.1.14             st14.localdomain st14 st14-eth0.localdomain st14-eth0
+192.168.1.14            st14-ib0.localdomain st14-ib0
+
+# Node Entry for node: st15 (ID=108)
+172.16.1.15             st15.localdomain st15 st15-eth0.localdomain st15-eth0
+192.168.1.15            st15-ib0.localdomain st15-ib0
+
+# Node Entry for node: st16 (ID=105)
+172.16.1.16             st16.localdomain st16 st16-eth0.localdomain st16-eth0
+192.168.1.16            st16-ib0.localdomain st16-ib0
+
+# Node Entry for node: st17 (ID=106)
+172.16.1.17             st17.localdomain st17 st17-eth0.localdomain st17-eth0
+192.168.1.17            st17-ib0.localdomain st17-ib0
+
+# Node Entry for node: st18 (ID=113)
+172.16.1.18             st18.localdomain st18 st18-eth0.localdomain st18-eth0
+192.168.1.18            st18-ib0.localdomain st18-ib0
+
+# Node Entry for node: st19 (ID=114)
+172.16.1.19             st19.localdomain st19 st19-eth0.localdomain st19-eth0
+192.168.1.19            st19-ib0.localdomain st19-ib0
+
+# Node Entry for node: st20 (ID=147)
+172.16.1.20             st20.localdomain st20 st20-eth0.localdomain st20-eth0
+192.168.1.20            st20-ib0.localdomain st20-ib0
+
+# Node Entry for node: st21 (ID=146)
+172.16.1.21             st21.localdomain st21 st21-eth0.localdomain st21-eth0
+192.168.1.21            st21-ib0.localdomain st21-ib0
+
+# Node Entry for node: st22 (ID=145)
+172.16.1.22             st22.localdomain st22 st22-eth0.localdomain st22-eth0
+192.168.1.22            st22-ib0.localdomain st22-ib0
+
+# Node Entry for node: st23 (ID=144)
+172.16.1.23             st23.localdomain st23 st23-eth0.localdomain st23-eth0
+192.168.1.23            st23-ib0.localdomain st23-ib0
+
+# Node Entry for node: st24 (ID=151)
+172.16.1.24             st24.localdomain st24 st24-eth0.localdomain st24-eth0
+192.168.1.24            st24-ib0.localdomain st24-ib0
+
+# Node Entry for node: st25 (ID=150)
+172.16.1.25             st25.localdomain st25 st25-eth0.localdomain st25-eth0
+192.168.1.25            st25-ib0.localdomain st25-ib0
+
+# Node Entry for node: st26 (ID=149)
+172.16.1.26             st26.localdomain st26 st26-eth0.localdomain st26-eth0
+192.168.1.26            st26-ib0.localdomain st26-ib0
+
+# Node Entry for node: st27 (ID=148)
+172.16.1.27             st27.localdomain st27 st27-eth0.localdomain st27-eth0
+192.168.1.27            st27-ib0.localdomain st27-ib0
+
+# Node Entry for node: st28 (ID=143)
+172.16.1.28             st28.localdomain st28 st28-eth0.localdomain st28-eth0
+192.168.1.28            st28-ib0.localdomain st28-ib0
+
+# Node Entry for node: st29 (ID=142)
+172.16.1.29             st29.localdomain st29 st29-eth0.localdomain st29-eth0
+192.168.1.29            st29-ib0.localdomain st29-ib0
+
+# Node Entry for node: st30 (ID=134)
+172.16.1.30             st30.localdomain st30 st30-eth0.localdomain st30-eth0
+192.168.1.30            st30-ib0.localdomain st30-ib0
+
+# Node Entry for node: st31 (ID=135)
+172.16.1.31             st31.localdomain st31 st31-eth0.localdomain st31-eth0
+192.168.1.31            st31-ib0.localdomain st31-ib0
+
+# Node Entry for node: st32 (ID=136)
+172.16.1.32             st32.localdomain st32 st32-eth0.localdomain st32-eth0
+192.168.1.32            st32-ib0.localdomain st32-ib0
+
+# Node Entry for node: st33 (ID=137)
+172.16.1.33             st33.localdomain st33 st33-eth0.localdomain st33-eth0
+192.168.1.33            st33-ib0.localdomain st33-ib0
+
+# Node Entry for node: st34 (ID=138)
+172.16.1.34             st34.localdomain st34 st34-eth0.localdomain st34-eth0
+192.168.1.34            st34-ib0.localdomain st34-ib0
+
+# Node Entry for node: st35 (ID=139)
+172.16.1.35             st35.localdomain st35 st35-eth0.localdomain st35-eth0
+192.168.1.35            st35-ib0.localdomain st35-ib0
+
+# Node Entry for node: st36 (ID=140)
+172.16.1.36             st36.localdomain st36 st36-eth0.localdomain st36-eth0
+192.168.1.36            st36-ib0.localdomain st36-ib0
+
+# Node Entry for node: st37 (ID=141)
+172.16.1.37             st37.localdomain st37 st37-eth0.localdomain st37-eth0
+192.168.1.37            st37-ib0.localdomain st37-ib0
+
+# Node Entry for node: st38 (ID=132)
+172.16.1.38             st38.localdomain st38 st38-eth0.localdomain st38-eth0
+192.168.1.38            st38-ib0.localdomain st38-ib0
+
+# Node Entry for node: st39 (ID=133)
+172.16.1.39             st39.localdomain st39 st39-eth0.localdomain st39-eth0
+192.168.1.39            st39-ib0.localdomain st39-ib0
+
+# Node Entry for node: st40 (ID=129)
+172.16.1.40             st40.localdomain st40 st40-eth0.localdomain st40-eth0
+192.168.1.40            st40-ib0.localdomain st40-ib0
+
+# Node Entry for node: st41 (ID=128)
+172.16.1.41             st41.localdomain st41 st41-eth0.localdomain st41-eth0
+192.168.1.41            st41-ib0.localdomain st41-ib0
+
+# Node Entry for node: st42 (ID=131)
+172.16.1.42             st42.localdomain st42 st42-eth0.localdomain st42-eth0
+192.168.1.42            st42-ib0.localdomain st42-ib0
+
+# Node Entry for node: st43 (ID=130)
+172.16.1.43             st43.localdomain st43 st43-eth0.localdomain st43-eth0
+192.168.1.43            st43-ib0.localdomain st43-ib0
+
+# Node Entry for node: st44 (ID=125)
+172.16.1.44             st44.localdomain st44 st44-eth0.localdomain st44-eth0
+192.168.1.44            st44-ib0.localdomain st44-ib0
+
+# Node Entry for node: st45 (ID=124)
+172.16.1.45             st45.localdomain st45 st45-eth0.localdomain st45-eth0
+192.168.1.45            st45-ib0.localdomain st45-ib0
+
+# Node Entry for node: st46 (ID=127)
+172.16.1.46             st46.localdomain st46 st46-eth0.localdomain st46-eth0
+192.168.1.46            st46-ib0.localdomain st46-ib0
+
+# Node Entry for node: st47 (ID=126)
+172.16.1.47             st47.localdomain st47 st47-eth0.localdomain st47-eth0
+192.168.1.47            st47-ib0.localdomain st47-ib0
+
+# BMC
+172.16.0.1     pst01    st01-bmc
+172.16.0.2     pst02    st02-bmc
+172.16.0.3     pst03    st03-bmc
+172.16.0.4     pst04    st04-bmc
+172.16.0.5     pst05    st05-bmc
+172.16.0.6     pst06    st06-bmc
+172.16.0.7     pst07    st07-bmc
+172.16.0.8     pst08    st08-bmc
+172.16.0.9     pst09    st09-bmc
+172.16.0.10    pst10    st10-bmc
+172.16.0.11    pst11    st11-bmc
+172.16.0.12    pst12    st12-bmc
+172.16.0.13    pst13    st13-bmc
+172.16.0.14    pst14    st14-bmc
+172.16.0.15    pst15    st15-bmc
+172.16.0.16    pst16    st16-bmc
+172.16.0.17    pst17    st17-bmc
+172.16.0.18    pst18    st18-bmc
+172.16.0.19    pst19    st19-bmc
+172.16.0.20    pst20    st20-bmc
+172.16.0.21    pst21    st21-bmc
+172.16.0.22    pst22    st22-bmc
+172.16.0.23    pst23    st23-bmc
+172.16.0.24    pst24    st24-bmc
+172.16.0.25    pst25    st25-bmc
+172.16.0.26    pst26    st26-bmc
+172.16.0.27    pst27    st27-bmc
+172.16.0.28    pst28    st28-bmc
+172.16.0.29    pst29    st29-bmc
+172.16.0.30    pst30    st30-bmc
+172.16.0.31    pst31    st31-bmc
+172.16.0.32    pst32    st32-bmc
+172.16.0.33    pst33    st33-bmc
+172.16.0.34    pst34    st34-bmc
+172.16.0.35    pst35    st35-bmc
+172.16.0.36    pst36    st36-bmc
+172.16.0.37    pst37    st37-bmc
+172.16.0.38    pst38    st38-bmc
+172.16.0.39    pst39    st39-bmc
+172.16.0.40    pst40    st40-bmc
+172.16.0.41    pst41    st41-bmc
+172.16.0.42    pst42    st42-bmc
+172.16.0.43    pst43    st43-bmc
+172.16.0.44    pst44    st44-bmc
+172.16.0.45    pst45    st45-bmc
+172.16.0.46    pst46    st46-bmc
+172.16.0.47    pst47    st47-bmc

@@ -1,0 +1,5 @@
+---
+
+- name: pdsh, install and configure pdsh if enabled
+  import_tasks: pdsh.yaml
+  when: enable_pdsh is defined and enable_pdsh

@@ -1,0 +1,12 @@
+---
+
+- import_tasks: slurm_install.yaml
+
+#- import_tasks: munge.yaml
+
+- import_tasks: slurm_mysql.yaml
+
+- import_tasks: slurm_configs.yaml
+
+- import_tasks: slurmdbd_service.yaml
+  when: slurm_accountingstoragehost is defined

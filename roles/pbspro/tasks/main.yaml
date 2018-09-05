@@ -1,0 +1,5 @@
+---
+
+- name: pbspro, install and configure pbspro
+  import_tasks: pbspro.yaml
+  when: enable_pbspro is defined and enable_pbspro

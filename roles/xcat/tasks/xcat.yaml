@@ -1,0 +1,52 @@
+---
+
+- name: Install xCAT
+  #environment: "{{ proxy_env }}"
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - xCAT
+
+- name: xcat, /etc/export.d/xcat
+  template:
+    src: xcat_exports.j2
+    dest: /etc/exports.d/xcat.exports
+    mode: 0444
+  when: xcat_nfs_exports is defined
+  notify: reload exportfs
+
+- name: xcat, configure dhcp interface on master
+  shell: 'chdef -t site dhcpinterfaces="xcatmn|{{ cluster_sms_eth_internal }}"'
+
+- name: xcat, copy in CentOS DVD ISO from local storage
+  copy:
+    src: '{{ xcat_centos_local_iso_path }}'
+    dest: '{{ xcat_centos_remote_iso_path }}'
+  when: xcat_centos_local_iso_path is defined
+
+- name: xcat, copy in CentOS DVD ISO from web URL
+  get_url:
+    url: '{{ xcat_centos_url_iso_path }}'
+    dest: '{{ xcat_centos_remote_iso_path }}'
+    checksum: 'sha256:{{ xcat_centos_iso_checksum }}'
+  when: xcat_centos_url_iso_path is defined
+
+- name: xcat, Initialize OS images for use with xCAT
+  command: 'copycds {{ xcat_centos_remote_iso_path }}'
+
+- name: xcat, Create chroot based compute image
+  environment:
+    CHROOT: '{{ compute_bos_path }}'
+  command: 'genimage centos7.4-x86_64-netboot-compute'
+
+- name: xcat, Enable repos in chroot
+  command: 'yum-config-manager --installroot={{ xcat_bos_path }} --enable base'
+  notify: rebuild image
+
+- name: xcat, install xcat_files
+  import_tasks: xcat_files.yaml
+
+- name: xcat, xcat provision image
+  import_tasks: xcat_provision.yaml
+#  when: xcat_provision is defined and xcat_provision

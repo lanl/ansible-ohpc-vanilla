@@ -1,0 +1,9 @@
+---
+
+cluster_sms_eth_internal: "eth1"
+warewulf_compute_eth_provision: "eth0"
+compute_bos_path: "/opt/ohpc/admin/images/centos7.4"
+
+warewulf_bos_limits:
+  - '* soft memlock unlimited'
+  - '* hard memlock unlimited'

@@ -1,0 +1,127 @@
+---
+
+- name: ohpc_dev_components, install development components
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - ohpc-autotools
+    - EasyBuild-ohpc
+    - hwloc-ohpc
+    - spack-ohpc
+    - valgrind-ohpc
+    - gnu7-compilers-ohpc
+    - llvm5-compilers-ohpc
+
+- name: ohpc_dev_components, install mpi stacks without pmix
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - openmpi3-gnu7-ohpc
+    - mpich-gnu7-ohpc
+  when: (enable_mpi_defaults is defined and enable_mpi_defaults)
+        and (enable_pmix is defined and not enable_pmix)
+
+- name: ohpc_dev_components, install mpi stacks with pmix
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - openmpi3-pmix-slurm-gnu7-ohpc
+    - mpich-gnu7-ohpc
+  when: (enable_mpi_defaults is defined and enable_mpi_defaults)
+        and (enable_pmix is defined and enable_pmix)
+
+- name: ohpc_dev_components, install mvapich components with IB
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - mvapich2-gnu7-ohpc
+    - ohpc-gnu7-mvapich2-parallel-libs
+  when: enable_ib is defined and enable_ib
+        and not ansible_architecture == "aarch64"
+
+- name: ohpc_dev_components, install mvapich components with OPA
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - mvapich2-psm2-gnu7-ohpc
+    - ohpc-gnu7-mvapich2-parallel-libs
+  when: enable_opa is defined and enable_opa
+        and not ansible_architecture == "aarch64"
+
+- name: ohpc_dev_components, install performance tools
+  package:
+    name: "{{ item }}"
+    state: "present"
+    enablerepo: 'rhel-7-for-arm-64-optional-rpms'
+  with_items:
+    - ohpc-gnu7-perf-tools
+    - lmod-defaults-gnu7-openmpi3-ohpc
+  when: ansible_architecture == "aarch64"
+
+- name: ohpc_dev_components, install performance tools
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - ohpc-gnu7-perf-tools
+    - lmod-defaults-gnu7-openmpi3-ohpc
+  when: not ansible_architecture == "aarch64"
+
+- name: ohpc_dev_components, install 3rd party tools
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - ohpc-gnu7-serial-libs
+    - ohpc-gnu7-io-libs
+    - ohpc-gnu7-python-libs
+    - ohpc-gnu7-runtimes
+
+- name: ohpc_dev_components, install 3rd party MPI tools
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - ohpc-gnu7-mpich-parallel-libs
+    - ohpc-gnu7-openmpi3-parallel-libs
+  when: enable_mpi_defaults is defined and enable_mpi_defaults
+
+- name: ohpc_dev_components, install intel packages
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - intel-compilers-devel-ohpc
+    - intel-mpi-devel-ohpc
+  when: enable_intel_packages is defined and enable_intel_packages
+
+- name: ohpc_dev_components, install intel opa packages
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - openmpi-psm2-intel-ohpc
+    - mvapich2-psm2-intel-ohpc
+  when: (enable_intel_packages is defined and enable_intel_packages)
+        and (enable_opa is defined and enable_opa)
+
+- name: ohpc_dev_components, install more intel packages
+  package:
+    name: "{{ item }}"
+    state: "present"
+  with_items:
+    - ohpc-intel-serial-libs
+    - ohpc-intel-io-libs
+    - ohpc-intel-perf-tools
+    - ohpc-intel-python-libs
+    - ohpc-intel-runtimes
+    - ohpc-intel-mpich-parallel-libs
+    - ohpc-intel-mvapich2-parallel-libs
+    - ohpc-intel-openmpi3-parallel-libs
+    - ohpc-intel-impi-parallel-libs
+  when: enable_intel_packages is defined and enable_intel_packages

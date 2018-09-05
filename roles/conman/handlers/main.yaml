@@ -1,0 +1,6 @@
+---
+
+- name: restart conman
+  systemd:
+    name: conman
+    state: restarted

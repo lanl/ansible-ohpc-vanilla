@@ -1,0 +1,140 @@
+---
+
+- name: nagios, install nagios
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - ohpc-nagios
+
+- name: nagios, install nagios in BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - nagios-plugins-all-ohpc
+    - nrpe-ohpc
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: nagios, check to see if nrpe is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled nrpe
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: nagios, enable nrpe in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable nrpe
+  when: '"disabled" in result.stdout'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: nagios, create nrpe.cfg file
+  template:
+    src: nrpe.cfg.j2
+    dest: '{{ compute_bos_path }}/etc/nagios/nrpe.cfg'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: nagios, add ntpe to /etc/services
+  lineinfile:
+    path: /etc/services
+    state: present
+    regexp: '^nrpe'
+    insertafter: '^###UNAUTHORIZED USE: Port 5666 used by SAIC NRPE'
+    line: 'nrpe            5666/tcp                # NRPE'
+
+- name: nagios, add hosts to /etc/hosts.allow
+  blockinfile:
+    path: /etc/hosts.allow
+    state: present
+    insertafter: EOF
+    regexp: '^nrpe'
+    marker: "### {mark} ANSIBLE MANAGED BLOCK ###"
+    block: |
+      nrpe : {{ cluster_sms_ip }}  : ALLOW
+      nrpe : ALL : DENY
+
+- name: nagios, add nagios user to BOS
+  command: '/usr/sbin/useradd -R {{ compute_bos_path }} -c "NRPE user for the NRPE service" -d /var/run/nrpe -r -g nrpe -s /sbin/nologin nrpe'
+  register: useradd_result
+  failed_when: 'useradd_result.rc != 9'
+  changed_when: 'useradd_result.rc == 0'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: nagios, add nagios group to BOS
+  command: '/usr/sbin/groupadd -R {{ compute_bos_path }} -r nrpe'
+  register: groupadd_result
+  failed_when: "groupadd_result.rc != 9"
+  changed_when: 'groupadd_result.rc == 0'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: nagios, copy in services.cfg
+  template:
+    src: services.cfg.j2
+    dest: /etc/nagios/conf.d/services.cfg
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: nagios, copy in hosts.cfg
+  template:
+    src: hosts.cfg.j2
+    dest: /etc/nagios/conf.d/hosts.cfg
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: nagios, modify commands.cfg file
+  template:
+    src: commands.cfg.j2
+    dest: /etc/nagios/objects/commands.cfg
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: nagios, modify contacts.cfg file
+  template:
+    src: contacts.cfg.j2
+    dest: /etc/nagios/objects/contacts.cfg
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes
+
+- name: nagios, check to see if password is set already
+  command: grep nagiosadmin /etc/nagios/passwd
+  register: nagios_passwd
+  ignore_errors: yes
+  changed_when: no
+
+- name: nagios, set password for nagios web
+  command: 'htpasswd -Bbc -C 15 /etc/nagios/passwd nagiosadmin {{ nagios_web_password }}'
+  no_log: true
+  when: nagios_passwd.rc != 0
+
+- name: nagios, enable and start nagios
+  systemd:
+    name: nagios
+    state: started
+    enabled: yes
+
+- name: nagios, allow users to ping
+  file:
+    path: /bin/ping
+    mode: 'u+s'

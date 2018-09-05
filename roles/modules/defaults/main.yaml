@@ -1,0 +1,4 @@
+---
+
+cluster_lmod_admin_paths: '/opt/ohpc/admin/modulefiles:/opt/ohpc/pub/modulefiles'
+cluster_lmod_user_paths: '/opt/ohpc/pub/modulefiles'

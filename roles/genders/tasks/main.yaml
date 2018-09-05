@@ -1,0 +1,5 @@
+---
+
+- name: genders, install and configure genders if enabled
+  import_tasks: genders.yaml
+  when: enable_genders is defined and enable_genders

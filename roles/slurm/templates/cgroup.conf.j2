@@ -1,0 +1,8 @@
+{{ ansible_managed | comment }}
+
+# Slurm cgroup.conf for Cray XC systems
+CgroupAutomount=yes
+CgroupMountpoint="/dev"
+ConstrainCores=yes
+ConstrainRAMSpace=no
+TaskAffinity=no

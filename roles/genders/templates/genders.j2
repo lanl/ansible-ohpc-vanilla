@@ -1,0 +1,6 @@
+{{ ansible_managed | comment }}
+
+{{ cluster_sms_hostname }}      sms
+{% for key,value in cluster_compute_nodes.iteritems()|sort %}
+{{ key }}       compute,bmc={{ value.bmc }}
+{% endfor %}

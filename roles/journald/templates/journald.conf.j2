@@ -1,0 +1,64 @@
+{{ ansible_managed | comment }}
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+#
+# Entries in this file show the compile time defaults.
+# You can change settings by editing this file.
+# Defaults can be restored by simply deleting this file.
+#
+# See journald.conf(5) for details.
+
+[Journal]
+{% if journald_Storage is defined %}Storage={{ journald_Storage }}{% else %}#Storage=auto{% endif %}
+
+{% if journald_Compress is defined %}Compress={{ journald_Compress }}{% else %}#Compress=yes{% endif %}
+
+{% if journald_Seal is defined %}Seal={{ journald_Seal }}{% else %}#Seal=yes{% endif %}
+
+{% if journald_SplitMode is defined %}SplitMode={{ journald_SplitMode }}{% else %}#SplitMode=uid{% endif %}
+
+{% if journald_SyncIntervalSec is defined %}SyncIntervalSec={{ journald_SyncIntervalSec }}{% else %}#SyncIntervalSec=5m{% endif %}
+
+{% if journald_RateLimitInterval is defined %}RateLimitInterval={{ journald_RateLimitInterval }}{% else %}#RateLimitInterval=30s{% endif %}
+
+{% if journald_RateLimitBurst is defined %}RateLimitBurst={{ journald_RateLimitBurst }}{% else %}#RateLimitBurst=1000{% endif %}
+
+{% if journald_SystemMaxUse is defined %}SystemMaxUse={{ journald_SystemMaxUse }}{% else %}#SystemMaxUse={% endif %}
+
+{% if journald_SystemKeepFree is defined %}SystemKeepFree={{ journald_SystemKeepFree }}{% else %}#SystemKeepFree={% endif %}
+
+{% if journald_SystemMaxFileSize is defined %}SystemMaxFileSize={{ journald_SystemMaxFileSize }}{% else %}#SystemMaxFileSize={% endif %}
+
+{% if journald_RuntimeMaxUse is defined %}RuntimeMaxUse={{ journald_RuntimeMaxUse }}{% else %}#RuntimeMaxUse={% endif %}
+
+{% if journald_RuntimeKeepFree is defined %}RuntimeKeepFree={{ journald_RuntimeKeepFree }}{% else %}#RuntimeKeepFree={% endif %}
+
+{% if journald_RuntimeMaxFileSize is defined %}RuntimeMaxFileSize={{ journald_RuntimeMaxFileSize }}{% else %}#RuntimeMaxFileSize={% endif %}
+
+{% if journald_MaxRetentionSec is defined %}MaxRetentionSec={{ journald_MaxRetentionSec }}{% else %}#MaxRetentionSec={% endif %}
+
+{% if journald_MaxFileSec is defined %}MaxFileSec={{ journald_MaxFileSec }}{% else %}#MaxFileSec=1month{% endif %}
+
+{% if journald_ForwardToSyslog is defined %}ForwardToSyslog={{ journald_ForwardToSyslog }}{% else %}#ForwardToSyslog=yes{% endif %}
+
+{% if journald_ForwardToKMsg is defined %}ForwardToKMsg={{ journald_ForwardToKMsg }}{% else %}#ForwardToKMsg=no{% endif %}
+
+{% if journald_ForwardToConsole is defined %}ForwardToConsole={{ journald_ForwardToConsole }}{% else %}#ForwardToConsole=no{% endif %}
+
+{% if journald_ForwardToWall is defined %}ForwardToWall={{ journald_ForwardToWall }}{% else %}#ForwardToWall=yes{% endif %}
+
+{% if journald_TTYPath is defined %}TTYPath={{ journald_TTYPath }}{% else %}#TTYPath=/dev/console{% endif %}
+
+{% if journald_MaxLevelStore is defined %}MaxLevelStore={{ journald_MaxLevelStore }}{% else %}#MaxLevelStore=debug{% endif %}
+
+{% if journald_MaxLevelSyslog is defined %}MaxLevelSyslog={{ journald_MaxLevelSyslog }}{% else %}#MaxLevelSyslog=debug{% endif %}
+
+{% if journald_MaxLevelKMsg is defined %}MaxLevelKMsg={{ journald_MaxLevelKMsg }}{% else %}#MaxLevelKMsg=notice{% endif %}
+
+{% if journald_MaxLevelConsole is defined %}MaxLevelConsole={{ journald_MaxLevelConsole }}{% else %}#MaxLevelConsole=info{% endif %}
+
+{% if journald_MaxLevelWall is defined %}MaxLevelWall={{ journald_MaxLevelWall }}{% else %}#MaxLevelWall=emerg{% endif %}

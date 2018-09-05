@@ -1,0 +1,4 @@
+{{ ansible_managed | comment }}
+{% for line in xcat_nfs_exports %}
+{{ line }}
+{% endfor %}

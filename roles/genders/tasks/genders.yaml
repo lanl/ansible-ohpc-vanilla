@@ -1,0 +1,17 @@
+---
+
+- name: genders, install genders
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - genders-ohpc
+
+- name: genders, configure /etc/genders
+  template:
+    src: genders.j2
+    dest: /etc/genders
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+    backup: yes

@@ -1,0 +1,64 @@
+---
+
+- name: cron, set facts for OS release
+  set_fact:
+    cron_service_name: crond
+  when: ansible_os_family == "RedHat"
+
+- name: cron, set facts for OS release
+  set_fact:
+    cron_service_name: cron
+  when: ansible_distribution == "SLES"
+
+- name: cron, install cron
+  #environment: '{{ proxy_env }}'
+  package:
+    name: cronie
+    state: present
+
+- name: cron, ensure crond is running
+  systemd:
+    name: '{{ cron_service_name }}'
+    state: started
+    enabled: yes
+  when: not ansible_virtualization_type == 'docker'
+
+- name: cron, simple cron example
+  cron:
+    name: hello world
+    minute: '0'
+    hour: '0-23'
+    job: 'echo "hello world" > /tmp/cronhourly'
+
+- name: cron, copy in longer scripts to cron.d
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/cron.d/'
+    owner: 'root'
+    group: 'root'
+    mode: 0600
+  with_fileglob:
+    - 'cron.d/{{ ansible_hostname }}/*'
+    - '{{ playbook_dir }}/files/{{ ansible_hostname }}/cron.d/*'
+
+- name: cron, copy in longer scripts to cron.hourly
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/cron.hourly/'
+    owner: 'root'
+    group: 'root'
+    mode: 0600
+  with_fileglob:
+    - 'cron.hourly/{{ ansible_hostname }}/*'
+    - '{{ playbook_dir }}/files/{{ ansible_hostname }}/cron.hourly/*'
+
+- name: cron, copy in longer scripts to cron.daily
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/cron.daily/'
+    owner: 'root'
+    group: 'root'
+    mode: 0600
+  with_fileglob:
+    - 'cron.daily/{{ ansible_hostname }}/*'
+    - '{{ playbook_dir }}/files/{{ ansible_hostname }}/cron.daily/*'

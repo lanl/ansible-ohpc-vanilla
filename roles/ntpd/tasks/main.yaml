@@ -1,0 +1,37 @@
+---
+
+- name: ntpd, Set timezone
+  timezone:
+    name: 'America/Denver'
+
+- name: ntpd, Ensure ntpd is installed
+  #environment: "{{ proxy_env }}"
+  package:
+    name: ntp
+    state: present
+
+- name: ntpd, Update ntpd.conf
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: 0444
+  notify: restart ntpd
+
+- name: ntpd, Generate local ntpd.conf
+  template:
+    src: ntp.conf.j2
+    dest: /tmp/{{ ansible_hostname }}/ntp.conf
+    owner: root
+    group: root
+    mode: 0444
+  delegate_to: localhost
+  when: gen_templates is defined and gen_templates
+
+- name: ntpd, Ensure it starts at bootup
+  systemd:
+    name: ntpd
+    state: started
+    enabled: yes
+  when: not ansible_virtualization_type == "docker"

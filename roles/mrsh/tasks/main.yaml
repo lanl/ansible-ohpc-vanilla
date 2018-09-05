@@ -1,0 +1,5 @@
+---
+
+- name: mrsh, install and configure mrsh if enabled
+  import_tasks: mrsh.yaml
+  when: enable_mrsh is defined and enable_mrsh

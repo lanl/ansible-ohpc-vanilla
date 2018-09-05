@@ -1,0 +1,16 @@
+{{ ansible_managed | comment }}
+
+# Compute nodes
+compute {% if netgroup_compute_nodes %}{{ netgroup_compute_nodes }}{% endif %}
+
+# Frontend nodes
+
+fe {% if netgroup_fe_nodes %}{{ netgroup_fe_nodes }}{% endif %}
+
+# IO Nodes
+
+io {% if netgroup_io_nodes %}{{ netgroup_io_nodes }}{% endif %}
+
+# ALL nodes
+
+all compute fe io

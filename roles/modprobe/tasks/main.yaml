@@ -1,0 +1,11 @@
+---
+
+- name: modprobe, modprobe.d files
+  template:
+    src: modprobe.j2
+    dest: "/etc/modprobe.d/{{ item.key }}"
+    owner: root
+    group: root
+    mode: 0555
+  with_dict: "{{ modprobed_files }}"
+  when: modprobed_files is defined

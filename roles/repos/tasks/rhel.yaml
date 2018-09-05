@@ -1,0 +1,18 @@
+---
+
+- name: rhel, create directory for repository
+  file:
+    path: '/var/www/html'
+    state: directory
+
+- name: rhel, create repo for ARM (this may take awhile)
+  command: "reposync --gpgcheck -l --download_path=/var/www/html --repoid={{ item }}"
+  with_items:
+    - rhel-7-for-arm-64-rpms
+    - rhel-7-for-arm-64-optional-rpms
+
+- name: rhel, update repo metadata
+  command: "createrepo -v /var/www/html/{{ item }}"
+  with_items:
+    - rhel-7-for-arm-64-rpms
+    - rhel-7-for-arm-64-optional-rpms

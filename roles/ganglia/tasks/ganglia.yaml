@@ -1,0 +1,78 @@
+---
+
+- name: ganglia, install ganglia
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - ohpc-ganglia
+
+- name: ganglia, install ganglia into BOS
+  package:
+    name: '{{ item }}'
+    installroot: '{{ compute_bos_path }}'
+    state: present
+  with_items:
+    - ganglia-gmond-ohpc
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: ganglia, create gmond.conf
+  template:
+    src: gmond.conf.j2
+    dest: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+  with_items:
+    - /etc/ganglia/gmond.conf
+  notify:
+    - restart gmond
+    - restart httpd
+
+- name: ganglia, create gmond.conf in BOS
+  template:
+    src: gmond.conf.j2
+    dest: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+  with_items:
+    - '{{ compute_bos_path }}/etc/ganglia/gmond.conf'
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: ganglia, create gmetad.conf
+  template:
+    src: gmetad.conf.j2
+    dest: /etc/ganglia/gmetad.conf
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+  notify:
+    - restart gmetad
+    - restart httpd
+
+- name: ganglia, start and enable ganglia
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+    - gmond
+    - gmetad
+
+- name: ganglia, check to see if gmond is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled gmond
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: ganglia, enable ganglia in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable gmond
+  when: '"disabled" in result.stdout'
+  notify:
+    - rebuild vnfs
+    - rebuild image

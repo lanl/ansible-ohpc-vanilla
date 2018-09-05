@@ -1,0 +1,6 @@
+{{ ansible_managed | comment }}
+{% if cm_id_rsa_key is defined %}{{ cm_id_rsa_key }}{% endif %}
+
+{% if ansible_id_rsa_key is defined %}{{ ansible_id_rsa_key }}{% endif %}
+
+{% if sshd_users_id_rsa_key is defined %}{{ sshd_users_id_rsa_key }}{% endif %}

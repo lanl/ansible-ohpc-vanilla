@@ -1,0 +1,96 @@
+---
+
+- name: warewulf_files, Import files into compute image
+  command: 'wwsh -y file import {{ item }}'
+  with_items:
+    - '/etc/passwd'
+    - '/etc/group'
+    - '/etc/shadow'
+    - '/etc/munge/munge.key'
+
+- name: warewulf_files, Create temp network file to be imported into vnfs
+  template:
+    src: network.j2
+    dest: /tmp/network.vnfs
+
+- name: warewulf_files, Import /tmp/network file into vnfs
+  command: wwsh -y file import /tmp/network.vnfs --name network
+
+- name: warewulf_files, wwsh set network file in vnfs
+  command: wwsh -y file set network --path /etc/sysconfig/network --mode=0444 --uid=0
+
+- name: warewulf_files, Remove temporary network file
+  file:
+    path: /tmp/network.vnfs
+    state: absent
+
+- name: warewulf_files, copy in local resolv.conf
+  copy:
+    src: /etc/resolv.conf
+    remote_src: yes
+    dest: '{{ compute_bos_path}}/etc/resolv.conf'
+    mode: 0444
+    backup: yes
+
+- name: warewulf_files, Set limits in BOS
+  template:
+    src: 'limits.conf.j2'
+    dest: '{{ compute_bos_path }}/etc/security/limits.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+
+- name: warewulf_files, copy in ntp.conf
+  template:
+    src: ntp.conf.j2
+    dest: '{{ compute_bos_path}}/etc/ntp.conf'
+    owner: 'root'
+    group: 'root'
+    mode: 0444
+    backup: yes
+
+- name: warewulf_files, check to see if ntpd is enabled in BOS
+  command: chroot {{ compute_bos_path }} systemctl is-enabled ntpd
+  register: result
+  failed_when: 'result.rc > 1'
+  changed_when: 'result.rc == 1'
+
+- name: warewulf_files, enable ntpd in BOS
+  command: chroot {{ compute_bos_path }} systemctl enable ntpd
+  when: '"disabled" in result.stdout'
+  notify: rebuild vnfs
+
+- name: warewulf_files, Ensure BOS /root/.ssh exists
+  file:
+    path: '{{ compute_bos_path }}/root/.ssh'
+    state: directory
+    owner: 'root'
+    group: 'root'
+    mode: 0700
+
+- name: warewulf_files, copy in cluster key
+  file:
+    src: /root/.ssh/cluster.pub
+    remote_src: yes
+    dest: '{{ compute_bos_path }}/root/.ssh/authorized_keys'
+    owner: 'root'
+    group: 'root'
+    mode: 0400
+
+- name: warewulf_files, fstab in BOS Image
+  template:
+    src: fstab.j2
+    dest: '{{ compute_bos_path }}/etc/fstab'
+    owner: 'root'
+    group: 'root'
+    mode: 0444
+    backup: yes
+  when: warewulf_bos_fstab is defined
+
+- name: warewulf_files, copy in slurm configs if enabled
+  import_tasks: warewulf_slurm.yaml
+  when: enable_slurm is defined and enable_slurm
+
+- name: warewulf_files, copy in pbspro configs if enabled
+  import_tasks: warewulf_pbspro.yaml
+  when: enable_pbspro is defined and enable_pbspro

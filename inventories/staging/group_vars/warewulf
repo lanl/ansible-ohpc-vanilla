@@ -1,0 +1,6 @@
+---
+warewulf_centos_bos_path: '/opt/ohpc/admin/images/centos7.4'
+warewulf_rhel_bos_path: '/opt/ohpc/admin/images/rhel7.4'
+warewulf_sles_bos_path: '/opt/ohpc/admin/images/sles12sp3'
+
+warewulf_provision_wait: 180

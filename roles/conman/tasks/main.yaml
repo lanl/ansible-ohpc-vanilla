@@ -1,0 +1,5 @@
+---
+
+- name: conman, install and configure conman if enabled
+  import_tasks: conman.yaml
+  when: enable_ipmisol is defined and enable_ipmisol

@@ -1,0 +1,7 @@
+---
+
+- name: Include warewulf if deploying a warewulf cluster
+  import_tasks: warewulf.yaml
+  when: "'warewulf' in group_names
+        and (ansible_os_family == 'RedHat'
+        or ansible_distribution == 'SLES')"

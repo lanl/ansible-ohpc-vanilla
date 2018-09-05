@@ -1,0 +1,26 @@
+---
+
+- name: xcat_provision, run packimage
+  command: packimage centos7.4-x86_64-netboot-compute
+  register: result
+  failed_when: result.rc != 0
+
+- name: xcat_provision, add hosts to cluster
+  command: 'mkdef -f -t node {{ item.key }} groups=compute,all ip={{ item.value.ip }} mac={{ item.value.mac }} netboot=pxe'
+  with_dict: '{{ cluster_compute_nodes }}'
+
+- name: xcat_provision, set domainname
+  command: 'chdef -t site domain={{ xcat_domain_name }}'
+
+- name: xcat_provision, set image for compute nodes
+  command: 'chdef -t group compute provmethod=centos7.4-x86_64-netboot-compute'
+
+- name: xcat_provision, run xcat commands to finish setup
+  command: '{{ item }}'
+  with_items:
+    - makehosts
+    - makenetworks
+    - makedhcp -n
+    - makedns -n
+    - nodeset compute osimage=centos7.4-x86_64-netboot-compute
+  notify: restart dhcpd

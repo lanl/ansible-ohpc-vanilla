@@ -1,0 +1,16 @@
+---
+
+- name: clustershell, install clustershell
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - clustershell-ohpc
+
+- name: clustershell, create local.cfg file
+  template:
+    src: local.cfg.j2
+    dest: /etc/clustershell/groups.d/local.cfg
+    owner: 'root'
+    group: 'root'
+    mode: '0444'

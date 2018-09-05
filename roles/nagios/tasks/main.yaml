@@ -1,0 +1,5 @@
+---
+
+- name: install and configure nagios if enabled
+  import_tasks: nagios.yaml
+  when: enable_nagios is defined and enable_nagios

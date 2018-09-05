@@ -1,0 +1,9 @@
+---
+
+- name: limits, Configure limits.conf file
+  template:
+    src: 'limits.conf.j2'
+    dest: '{{ limits_path }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'

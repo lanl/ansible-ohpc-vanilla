@@ -1,0 +1,5 @@
+---
+
+- name: Include xcat if deploying an xcat cluster
+  import_tasks: xcat.yaml
+  when: "'xcat' in group_names"

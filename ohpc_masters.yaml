@@ -1,0 +1,42 @@
+---
+
+- hosts: ohpc_masters
+  roles:
+    - { role: selinux, tags: selinux }
+    - { role: users, tags: users }
+    - { role: network_interface, tags: network_interface }
+    - { role: repos, tags: repos }
+    - { role: ohpc, tags: ohpc }
+    - { role: slurm, tags: slurm }
+    - { role: warewulf, tags: warewulf }
+    - { role: xcat, tags: xcat }
+    - { role: powerman, tags: powerman }
+    - { role: munge, tags: munge }
+    - { role: modprobe, tags: modprobe }
+    - { role: logrotate, tags: logrotate }
+    - { role: nfs, tags: nfs }
+    - { role: conman, tags: conman }
+    - { role: journald, tags: journald }
+    - { role: limits, tags: limits }
+    - { role: netgroup, tags: netgroup }
+    - { role: motd, tags: motd }
+    - { role: cron, tags: cron }
+    - { role: modules, tags: modules }
+    - { role: hosts, tags: hosts }
+    - { role: syslog, tags: syslog }
+    - { role: infiniband, tags: infiniband }
+    - { role: omnipath, tags: omnipath }
+    - { role: opensm, tags: opensm }
+#    - { role: sshd, tags: sshd }
+    - { role: ntpd, tags: ntpd }
+    - { role: resolver, tags: resolver }
+    - { role: nagios, tags: nagios }
+    - { role: ganglia, tags: ganglia }
+    - { role: clustershell, tags: clustershell }
+    - { role: mrsh, tags: mrsh }
+    - { role: pdsh, tags: pdsh }
+    - { role: genders, tags: genders }
+    - { role: beegfs_client, tags: beegfs_client }
+    - { role: lustre_client, tags: lustre_client }
+#    - { role: ohpc_dev_components, tags: ohpc_dev_components }
+#    - { role: pbspro, tags: pbspro }

@@ -1,0 +1,66 @@
+---
+
+- name: repos, Modify yum.conf
+  template:
+    src: yum.conf.j2
+    dest: /etc/yum.conf
+    mode: 0444
+    backup: yes
+  when: ansible_os_family == "RedHat"
+
+- name: repos, Create local-updates repo
+  yum_repository:
+    name: Local-Updates
+    file: local-updates
+    description: "LANL custom/third-party packages for this product"
+    baseurl: "{{ item.baseurl }}"
+    enabled: "{{ item.enabled }}"
+  with_items: "{{ repo_local_updates_yum_repo }}"
+  when: repo_local_updates_yum_repo is defined
+        and ansible_os_family == "RedHat"
+
+- name: repos, include virtualbox repo if enabled
+  import_tasks: virtualbox.yaml
+  when: enable_virtualbox is defined and enable_virtualbox
+
+- name: repos, include epel repos if in cm_servers group
+  package:
+    name: "{{ epel_release_x86_64 }}"
+    state: present
+  when: "'cm_servers' in group_names"
+
+#- name: repos, include ohpc repos if in ohpc group
+#  import_tasks: ohpc.yaml
+#  when: "'ohpc_masters' in group_names"
+
+- name: repos, include xcat repos if in xcat group
+  import_tasks: xcat.yaml
+  when: "'xcat' in group_names"
+
+- name: repos, create RHEL repo
+  import_tasks: rhel.yaml
+  when: ansible_distribution == "RedHat"
+        and ansible_architecture == "aarch64"
+
+- name: repos, Add beegfs repo for CentOS
+  yum_repository:
+    name: beegfs
+    file: beegfs-rhel7
+    description: "BeeGFS 6 (RHEL7)"
+    baseurl: "http://www.beegfs.io/release/beegfs_6/dists/rhel7"
+    enabled: yes
+    gpgcheck: no
+    gpgkey: "http://www.beegfs.io/release/beegfs_6/gpg/RPM-GPG-KEY-beegfs"
+  when: enable_beegfs_client is defined and enable_beegfs_client
+        and ansible_os_family == "RedHat"
+
+- name: repos, Add beegfs repo for SUSE
+  zypper_repository:
+    name: beegfs
+    description: "BeeGFS 6 (SUSE12)"
+    repo: "http://www.beegfs.io/release/beegfs_6/dists/suse12"
+    enabled: yes
+    disable_gpg_check: yes
+    autorefresh: yes
+  when: enable_beegfs_client is defined and enable_beegfs_client
+        and ansible_distribution == "SLES"

@@ -1,0 +1,36 @@
+---
+
+- name: syslog, Ensure syslog is installed
+  #environment: "{{ proxy_env }}"
+  package:
+    name: rsyslog
+    state: present
+
+- name: syslog, master rsyslog.conf file
+  template:
+    src: master-rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes
+  notify: restart rsyslog
+
+- name: syslog, rsyslog.conf file
+  template:
+    src: compute-rsyslog.conf.j2
+    dest: '{{ compute_bos_path }}/etc/rsyslog.conf'
+    owner: root
+    group: root
+    mode: 0444
+    backup: yes
+  notify:
+    - rebuild vnfs
+    - rebuild image
+
+- name: syslog, Ensure syslog is running
+  systemd:
+    name: rsyslog
+    state: started
+    enabled: yes
+  when: not ansible_virtualization_type == "docker"

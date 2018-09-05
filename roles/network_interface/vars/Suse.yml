@@ -1,0 +1,6 @@
+---
+network_pkgs:
+  - bridge-utils
+  - iputils
+
+net_path: "/etc/sysconfig/network"

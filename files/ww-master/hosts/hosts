@@ -1,0 +1,35 @@
+127.0.0.1 localhost.localdomain localhost
+
+10.0.2.15 ww-master.vagrant
+172.16.0.254 ww-master
+192.168.0.254 ww-master-ib0
+172.16.0.1 pww1
+
+### ALL ENTRIES BELOW THIS LINE WILL BE OVERWRITTEN BY WAREWULF ###
+#
+# See provision.conf for configuration paramaters
+
+
+# Node Entry for node: ww1 (ID=16)
+172.16.1.1              ww1.localdomain ww1 ww1-eth0.localdomain ww1-eth0
+
+# Node Entry for node: ww2 (ID=18)
+172.16.1.2              ww2.localdomain ww2 ww2-eth0.localdomain ww2-eth0
+
+# Node Entry for node: ww3 (ID=17)
+172.16.1.3              ww3.localdomain ww3 ww3-eth0.localdomain ww3-eth0
+
+# Node Entry for node: ww4 (ID=13)
+172.16.1.4              ww4.localdomain ww4 ww4-eth0.localdomain ww4-eth0
+
+# Node Entry for node: ww5 (ID=12)
+172.16.1.5              ww5.localdomain ww5 ww5-eth0.localdomain ww5-eth0
+
+# Node Entry for node: ww6 (ID=15)
+172.16.1.6              ww6.localdomain ww6 ww6-eth0.localdomain ww6-eth0
+
+# Node Entry for node: ww7 (ID=14)
+172.16.1.7              ww7.localdomain ww7 ww7-eth0.localdomain ww7-eth0
+
+# Node Entry for node: ww8 (ID=19)
+172.16.1.8              ww8.localdomain ww8 ww8-eth0.localdomain ww8-eth0

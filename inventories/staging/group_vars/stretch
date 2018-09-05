@@ -1,0 +1,387 @@
+---
+#
+# Cluster Settings
+#
+cluster_prefix: 'st'
+cluster_name: 'stretch'
+
+#
+# Cluster Scheduler
+#
+enable_slurm: true
+enable_pbspro: false
+
+#
+# BMC Information
+#
+cluster_bmc_username: 'admin'
+cluster_bmc_password: 'admin'
+
+#
+# Central syslog server 
+#
+syslog_master_remote_host: "*.info @usrc-log.usrc:514"
+syslog_compute_remote_host: "*.* @{{ cluster_sms_ip }}:514"
+
+#
+# BOS Mirror if using local repo
+#
+warewulf_BOS_MIRROR: "file:///var/www/html/rhel-7-for-arm-64-rpms"
+
+#
+# OpenHPC Optional Components
+#
+# HSN Components
+enable_ib: false
+enable_ipoib: true
+enable_opensm: false
+enable_opa: false
+enable_opafm: false
+
+# Warewulf Additional Options
+enable_kargs: false
+
+# 3rd Party Components
+enable_clustershell: false
+enable_ipmisol: true
+enable_ganglia: false
+enable_genders: false
+enable_mrsh: false
+enable_pdsh: true
+enable_nagios: false
+enable_powerman: true
+
+# Filesystem Components
+enable_beegfs_client: false
+enable_lustre_client: false
+
+# Development Tools
+enable_mpi_defaults: true
+enable_pmix: true
+enable_intel_packages: false
+
+#
+# Slurm Configs
+#
+slurm_config_path: "/etc/slurm"
+slurmctld_hostname: "{{ cluster_sms_hostname }}"
+slurmctld_addr: "{{ cluster_sms_ip }}"
+#slurmctld_backup: "{{ cluster_sms_hostname }}"
+slurmdbd_hostname: "{{ cluster_sms_hostname }}"
+slurm_clustername: "{{ cluster_name }}"
+
+# Variables in the *.conf.j2 files
+slurm_controlmachine: "{{ slurmctld_hostname }}"
+slurm_control_addr: "{{ slurmctld_addr }}"
+#slurm_backupcontroller: "{{ slurmctld_backup }}"
+slurm_dbdaddr: "{{ slurmdbd_hostname }}"
+slurm_dbdhost: "{{ slurmdbd_hostname }}"
+#slurm_jobcomphost: "{{ slurmdbd_hostname }}"
+slurm_accountingstoragehost: "localhost"
+#slurm_salloc_str: "/opt/slurm/bin/srun -n1 -N1 --mem-per-cpu=0 --pty --preserve-env --mpi=none $SHELL"
+slurm_pam_sshd: "account    required     pam_slurm.so"
+
+slurm_computenodes: |
+  NodeName=st[01-{{ cluster_num_computes }}] Sockets=2 CoresPerSocket=28 ThreadsPerCore=4 Feature=compute
+slurm_partitions: |
+  PartitionName=normal Nodes=st[01-{{ cluster_num_computes }}] Default=YES DefaultTime=1:00:00 MaxTime=24:00:00 State=UP
+
+slurm_gres_nodes: []
+
+#
+# Powerman
+#
+powerman_node:
+  - node "st[01-{{ cluster_num_computes }}]" "ipmi0" "pst[01-{{ cluster_num_computes }}]"
+
+powerman_device:
+  - device  "ipmi0"  "ipmipower"  "/usr/sbin/ipmipower -u {{ cluster_bmc_username }} -p {{ cluster_bmc_password }} -h pst[01-{{ cluster_num_computes }}] |&"
+
+#
+# Cluster Compute Kernel Arguments
+#
+cluster_kernel_args: 'acpi_pad.disable=1'
+
+#
+# BeeGFS Settings
+#
+beegfs_sysmgmtd_host: '172.17.1.16'
+beegfs_test_mount_on_master: false
+
+#
+# Lustre Settings
+#
+lustre_mgs_fs_name: '192.168.100.254@o2ib:/lustre1'
+lustre_test_mount_on_master: false
+lustre_mnt_path: '/mnt/lustre'
+
+#
+# Warewulf kargs to bootstrap Kernel
+#
+warewulf_bootstrap_kargs: 'acpi_pad.disable=1'
+
+#
+# Nagios Settings
+#
+nagios_web_password: 'unknown'
+
+#
+# Export and Mount Options for NFS
+#
+warewulf_nfs_exports:
+  - "/home *(rw,no_subtree_check,fsid=10,no_root_squash)"
+  - "/opt/ohpc/pub *(ro,no_subtree_check,fsid=11)"
+  - "/opt/arm *(ro,no_subtree_check,fsid=12)"
+
+warewulf_bos_fstab:
+  - "{{ cluster_sms_ip }}:/home /home nfs nfsvers=3,rsize=1024,wsize=1024,cto 0 0"
+  - "{{ cluster_sms_ip }}:/opt/ohpc/pub /opt/ohpc/pub nfs nfsvers=3 0 0"
+  - "{{ cluster_sms_ip }}:/opt/arm /opt/arm nfs nfsvers=3 0 0"
+
+#
+# Cluster LMOD Paths
+#
+cluster_lmod_admin_paths: '/opt/ohpc/admin/modulefiles:/opt/ohpc/pub/modulefiles:/opt/arm/modulefiles/ThunderX2CN99/RHEL/7:/opt/arm/modulefiles/Generic-AArch64/RHEL/7'
+cluster_lmod_user_paths: '/opt/ohpc/pub/modulefiles:/opt/arm/modulefiles/ThunderX2CN99/RHEL/7:/opt/arm/modulefiles/Generic-AArch64/RHEL/7'
+
+#
+# Compute Node Settings
+#
+cluster_num_computes: 47
+
+cluster_compute_nodes:
+  st01:
+    ip: '172.16.1.1'
+    mac: 'F4:03:43:FE:C0:BE'
+    ipoib: '192.168.1.1'
+    bmc: '172.16.0.1'
+  st02:
+    ip: '172.16.1.2'
+    mac: 'F4:03:43:FE:90:CE'
+    ipoib: '192.168.1.2'
+    bmc: '172.16.0.2'
+  st03:
+    ip: '172.16.1.3'
+    mac: 'F4:03:43:FE:C0:06'
+    ipoib: '192.168.1.3'
+    bmc: '172.16.0.3'
+  st04:
+    ip: '172.16.1.4'
+    mac: 'F4:03:43:FE:A0:06'
+    ipoib: '192.168.1.4'
+    bmc: '172.16.0.4'
+  st05:
+    ip: '172.16.1.5'
+    mac: 'F4:03:43:FE:30:32'
+    ipoib: '192.168.1.5'
+    bmc: '172.16.0.5'
+  st06:
+    ip: '172.16.1.6'
+    mac: 'F4:03:43:FE:30:9E'
+    ipoib: '192.168.1.6'
+    bmc: '172.16.0.6'
+  st07:
+    ip: '172.16.1.7'
+    mac: 'F4:03:43:FE:C0:6E'
+    ipoib: '192.168.1.7'
+    bmc: '172.16.0.7'
+  st08:
+    ip: '172.16.1.8'
+    mac: 'F4:03:43:FE:A0:A2'
+    ipoib: '192.168.1.8'
+    bmc: '172.16.0.8'
+  st09:
+    ip: '172.16.1.9'
+    mac: 'F4:03:43:FE:20:CE'
+    ipoib: '192.168.1.9'
+    bmc: '172.16.0.9'
+  st10:
+    ip: '172.16.1.10'
+    mac: 'F4:03:43:FE:40:E2'
+    ipoib: '192.168.1.10'
+    bmc: '172.16.0.10'
+  st11:
+    ip: '172.16.1.11'
+    mac: 'F4:03:43:FE:A0:76'
+    ipoib: '192.168.1.11'
+    bmc: '172.16.0.11'
+  st12:
+    ip: '172.16.1.12'
+    mac: 'F4:03:43:FE:90:BE'
+    ipoib: '192.168.1.12'
+    bmc: '172.16.0.12'
+  st13:
+    ip: '172.16.1.13'
+    mac: 'F4:03:43:FE:30:8A'
+    ipoib: '192.168.1.13'
+    bmc: '172.16.0.13'
+  st14:
+    ip: '172.16.1.14'
+    mac: 'F4:03:43:FE:30:C6'
+    ipoib: '192.168.1.14'
+    bmc: '172.16.0.14'
+  st15:
+    ip: '172.16.1.15'
+    mac: 'F4:03:43:FE:30:52'
+    ipoib: '192.168.1.15'
+    bmc: '172.16.0.15'
+  st16:
+    ip: '172.16.1.16'
+    mac: 'F4:03:43:FE:A0:72'
+    ipoib: '192.168.1.16'
+    bmc: '172.16.0.16'
+  st17:
+    ip: '172.16.1.17'
+    mac: 'F4:03:43:FE:30:0A'
+    ipoib: '192.168.1.17'
+    bmc: '172.16.0.17'
+  st18:
+    ip: '172.16.1.18'
+    mac: 'F4:03:43:FE:A0:FA'
+    ipoib: '192.168.1.18'
+    bmc: '172.16.0.18'
+  st19:
+    ip: '172.16.1.19'
+    mac: 'F4:03:43:FE:C0:FA'
+    ipoib: '192.168.1.19'
+    bmc: '172.16.0.19'
+  st20:
+    ip: '172.16.1.20'
+    mac: 'F4:03:43:FE:90:F6'
+    ipoib: '192.168.1.20'
+    bmc: '172.16.0.20'
+  st21:
+    ip: '172.16.1.21'
+    mac: 'F4:03:43:FE:B0:4E'
+    ipoib: '192.168.1.21'
+    bmc: '172.16.0.21'
+  st22:
+    ip: '172.16.1.22'
+    mac: 'F4:03:43:FE:B0:D2'
+    ipoib: '192.168.1.22'
+    bmc: '172.16.0.22'
+  st23:
+    ip: '172.16.1.23'
+    mac: 'F4:03:43:FE:90:D2'
+    ipoib: '192.168.1.23'
+    bmc: '172.16.0.23'
+  st24:
+    ip: '172.16.1.24'
+    mac: 'F4:03:43:FE:C0:EE'
+    ipoib: '192.168.1.24'
+    bmc: '172.16.0.24'
+  st25:
+    ip: '172.16.1.25'
+    mac: 'F4:03:43:FE:20:EA'
+    ipoib: '192.168.1.25'
+    bmc: '172.16.0.25'
+  st26:
+    ip: '172.16.1.26'
+    mac: 'F4:03:43:FE:30:42'
+    ipoib: '192.168.1.26'
+    bmc: '172.16.0.26'
+  st27:
+    ip: '172.16.1.27'
+    mac: 'F4:03:43:FE:C0:2E'
+    ipoib: '192.168.1.27'
+    bmc: '172.16.0.27'
+  st28:
+    ip: '172.16.1.28'
+    mac: 'F4:03:43:FE:C0:82'
+    ipoib: '192.168.1.28'
+    bmc: '172.16.0.28'
+  st29:
+    ip: '172.16.1.29'
+    mac: 'F4:03:43:FE:90:DE'
+    ipoib: '192.168.1.29'
+    bmc: '172.16.0.29'
+  st30:
+    ip: '172.16.1.30'
+    mac: 'F4:03:43:FE:30:F2'
+    ipoib: '192.168.1.30'
+    bmc: '172.16.0.30'
+  st31:
+    ip: '172.16.1.31'
+    mac: 'F4:03:43:FE:B0:26'
+    ipoib: '192.168.1.31'
+    bmc: '172.16.0.31'
+  st32:
+    ip: '172.16.1.32'
+    mac: 'F4:03:43:FE:30:B2'
+    ipoib: '192.168.1.32'
+    bmc: '172.16.0.32'
+  st33:
+    ip: '172.16.1.33'
+    mac: 'F4:03:43:FE:C0:C2'
+    ipoib: '192.168.1.33'
+    bmc: '172.16.0.33'
+  st34:
+    ip: '172.16.1.34'
+    mac: 'F4:03:43:FE:C0:66'
+    ipoib: '192.168.1.34'
+    bmc: '172.16.0.34'
+  st35:
+    ip: '172.16.1.35'
+    mac: 'F4:03:43:FE:C0:8A'
+    ipoib: '192.168.1.35'
+    bmc: '172.16.0.35'
+  st36:
+    ip: '172.16.1.36'
+    mac: 'F4:03:43:FE:20:C2'
+    ipoib: '192.168.1.36'
+    bmc: '172.16.0.36'
+  st37:
+    ip: '172.16.1.37'
+    mac: 'F4:03:43:FE:A0:02'
+    ipoib: '192.168.1.37'
+    bmc: '172.16.0.37'
+  st38:
+    ip: '172.16.1.38'
+    mac: 'F4:03:43:FE:B0:7A'
+    ipoib: '192.168.1.38'
+    bmc: '172.16.0.38'
+  st39:
+    ip: '172.16.1.39'
+    mac: 'F4:03:43:FE:C0:C6'
+    ipoib: '192.168.1.39'
+    bmc: '172.16.0.39'
+  st40:
+    ip: '172.16.1.40'
+    mac: 'F4:03:43:FE:30:1A'
+    ipoib: '192.168.1.40'
+    bmc: '172.16.0.40'
+  st41:
+    ip: '172.16.1.41'
+    mac: 'F4:03:43:FE:B0:46'
+    ipoib: '192.168.1.41'
+    bmc: '172.16.0.41'
+  st42:
+    ip: '172.16.1.42'
+    mac: 'F4:03:43:FE:40:3A'
+    ipoib: '192.168.1.42'
+    bmc: '172.16.0.42'
+  st43:
+    ip: '172.16.1.43'
+    mac: 'F4:03:43:FE:C0:A6'
+    ipoib: '192.168.1.43'
+    bmc: '172.16.0.43'
+  st44:
+    ip: '172.16.1.44'
+    mac: 'F4:03:43:FE:A0:0A'
+    ipoib: '192.168.1.44'
+    bmc: '172.16.0.44'
+  st45:
+    ip: '172.16.1.45'
+    mac: 'F4:03:43:FE:20:FA'
+    ipoib: '192.168.1.45'
+    bmc: '172.16.0.45'
+  st46:
+    ip: '172.16.1.46'
+    mac: 'F4:03:43:FE:C0:1A'
+    ipoib: '192.168.1.46'
+    bmc: '172.16.0.46'
+  st47:
+    ip: '172.16.1.47'
+    mac: 'F4:03:43:FE:30:3E'
+    ipoib: '192.168.1.47'
+    bmc: '172.16.0.47'

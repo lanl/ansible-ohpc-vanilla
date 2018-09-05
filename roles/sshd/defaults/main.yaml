@@ -1,0 +1,50 @@
+---
+
+cm_ipaddr: []
+cm: []
+gateway: []
+ssh_known_hosts: []
+
+sshd_config_endblock: |
+  LogLevel INFO
+
+  HostbasedAuthentication yes
+  IgnoreUserKnownHosts yes
+  IgnoreRhosts no
+
+  PasswordAuthentication no
+  PermitRootLogin without-password
+
+ssh_config_custom_host: |
+  Host *
+  # Permit HostbasedAuthentication
+          HostbasedAuthentication yes
+  # We use PAM instead of ChallengeResponse
+          ChallengeResponseAuthentication no
+  # Allows non-root user hostbased auth
+          EnableSSHKeysign yes
+  # Allow X11
+          ForwardX11 yes
+  # If this option is set to yes then remote X11 clients will have full access
+  # to the original X11 display. As virtually no X11 client supports the untrusted
+  # mode correctly we set this to yes.
+          ForwardX11Trusted yes
+  # No protocol 1 allowed
+          Protocol 2
+
+shosts_hostnames: |
+  {{ cm_ipaddr }}
+  {{ cm }}.localdomain
+  {{ cm }}
+
+shosts_equiv_hosts: |
+  {% for key,value in gateway.iteritems()|sort %}
+  {{ value.gateway_hostname }}
+  {{ value.gateway_ipaddr }}
+  {{ value.gateway_comment }}
+  {% endfor %}
+
+ssh_known_hosts_entries: |
+  {% for key,value in ssh_known_hosts.iteritems()|sort %}
+  {{ value.ssh_known_hosts_cm_ssh_key }}
+  {% endfor %}

@@ -1,0 +1,95 @@
+---
+
+- name: warewulf, set facts based on OS release
+  set_fact:
+    warewulf_mysql_service: 'mysql'
+    warewulf_httpd_service: 'apache2'
+  when: ansible_distribution == "SLES"
+
+- name: warewulf, set facts based on OS release
+  set_fact:
+    warewulf_mysql_service: 'mariadb'
+    warewulf_httpd_service: 'httpd'
+  when: ansible_os_family == "RedHat"
+
+- name: warewulf, Install Warewulf
+  #environment: "{{ proxy_env }}"
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - "ohpc-warewulf"
+
+- name: warewulf, Update warewulf provision.conf
+  template:
+    src: provision.conf.j2
+    dest: /etc/warewulf/provision.conf
+
+- name: warewulf, Update sles_12 WW template
+  template:
+    src: sles_12.tmpl.j2
+    dest: '/usr/lib/warewulf/wwmkchroot/sles-12.tmpl'
+  when: ansible_distribution == "SLES"
+
+- name: warewulf, Update rhel-7 WW template
+  template:
+    src: rhel_7.tmpl.j2
+    dest: '/usr/libexec/warewulf/wwmkchroot/rhel-7.tmpl'
+  when: ansible_distribution == "RedHat"
+        and ansible_architecture == "aarch64"
+
+- name: warewulf, Enable tftp
+  template:
+    src: tftp.j2
+    dest: /etc/xinetd.d/tftp
+  notify: restart xinetd
+
+- name: warewulf, set dhcp interface for SLES
+  template:
+    src: dhcpd.j2
+    dest: /etc/sysconfig/dhcpd
+    backup: yes
+  when: ansible_distribution == "SLES"
+
+- name: warewulf, warewulf-httpd.conf file
+  template:
+    src: warewulf_httpd.conf.j2
+    dest: /etc/apache2/conf.d/warewulf-httpd.conf
+    backup: yes
+  when: ansible_distribution == "SLES"
+
+- name: warewulf, /etc/export.d/warewulf
+  template:
+    src: warewulf_exports.j2
+    dest: /etc/exports.d/warewulf.exports
+    mode: 0444
+  when: warewulf_nfs_exports is defined
+  notify: reload exportfs
+
+- name: warewulf, enable mariadb, nfs-server, and httpd
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+    - '{{ warewulf_mysql_service }}'
+    - '{{ warewulf_httpd_service }}'
+    - nfs-server
+
+- name: warewulf, Iinitialize warewulf DB and ssh keys
+  import_tasks: warewulf_init.yaml
+
+- name: warewulf, warewulf create BOS
+  import_tasks: warewulf_mkchroot.yaml
+#  when: warewulf_mkchroot is defined and warewulf_mkchroot
+
+- name: warewulf, manage files in Compute BOS
+  import_tasks: warewulf_files.yaml
+
+- name: warewulf, Assemble bootstrap image
+  import_tasks: warewulf_bootstrap.yaml
+#  when: warewulf_bootstrap is defined and warewulf_bootstrap
+
+- name: warewulf, Provision compute nodes in DB
+  import_tasks: warewulf_provision.yaml
+#  when: warewulf_provision is defined and warewulf_provision
